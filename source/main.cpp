@@ -65,7 +65,7 @@ int main()
 
 	printf("Hello, world!\n");
 
-	OggVorbis * backgroundMusic = new OggVorbis("audio/mmakers_theme.ogg");
+	OggVorbis * backgroundMusic = new OggVorbis("audio/bgm.ogg");
 	backgroundMusic->setLooping(true);
 	backgroundMusic->play();
 
