@@ -13,7 +13,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include <iostream>
+#include <vector>
 
 //Net stuff
 #include <sys/socket.h>
@@ -29,6 +29,8 @@
 
 //Util
 #include "include/util.h"
+#include "include/bubble.h"
+#include "include/flask.h"
 
 extern void displayError(const char * error);
 extern bool romfsEnabled;

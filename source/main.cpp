@@ -30,6 +30,49 @@ bool hasError = false;
 bool forceQuit = false;
 bool audioEnabled = false;
 
+int currentR = 0xFF;
+int currentG = 0xFF;
+int currentB = 0xFF;
+int currentA = 0xFF;
+
+int currentScreen = GFX_BOTTOM;
+
+int prevTime = 0;
+int currTime = 0;
+float dt;
+
+u32 getCurrentColor() 
+{
+	return RGBA8(currentR, currentG, currentB, currentA);
+}
+
+void setScreen(const char * screen)
+{
+	if (strcmp(screen, "top") == 0) 
+	{
+		currentScreen = GFX_TOP;
+	} 
+	else if (strcmp(screen, "top") == 0) 
+	{
+		currentScreen = GFX_BOTTOM;
+	}
+}
+
+float deltaStep()
+{
+	prevTime = currTime;
+
+	currTime = osGetTime();
+
+	dt = currTime - prevTime;
+
+	dt = dt * 0.001;
+
+	if (dt < 0) dt = 0; // Fix nasty timer bug
+
+	return dt;
+}
+
 void displayError(const char * error)
 {
 	hasError = true;
@@ -47,7 +90,7 @@ int main()
 
 	ptmuInit();
 
-	consoleInit(GFX_BOTTOM, NULL);
+	//consoleInit(GFX_BOTTOM, NULL);
 	
 	sf2d_set_clear_color(RGBA8(61, 142, 185, 0xFF)); // Reset background color.
 
@@ -57,13 +100,13 @@ int main()
 
 	audioEnabled = !ndspInit();
 
-	printf("%d\n", audioEnabled);
-
 	if (romfsEnabled) chdir("romfs:/");
 
 	if (!audioEnabled) displayError("DSP Failed to initialize. Please dump your DSPFirm!");
 
-	printf("Hello, world!\n");
+	deltaStep();
+
+	Flask * flask;
 
 	OggVorbis * backgroundMusic = new OggVorbis("audio/bgm.ogg");
 	backgroundMusic->setLooping(true);
@@ -73,24 +116,30 @@ int main()
 	{
 		if (!hasError)
 		{
+			flask->update(deltaStep()); //wee
+
 			//Start top screen
 			sf2d_start_frame(GFX_TOP, GFX_LEFT);
 
+			flask->render();
+			
 			sf2d_end_frame();
 		
 			//Start bottom screen
-			/*sf2d_start_frame(GFX_BOTTOM, GFX_LEFT);
+			sf2d_start_frame(GFX_BOTTOM, GFX_LEFT);
 
-			sf2d_end_frame();*/
+			flask->render();
+
+			sf2d_end_frame();
 
 			sf2d_swapbuffers();
 
-			hidScanInput();
+			/*hidScanInput();
 			u32 kTempDown = hidKeysDown();
 			if (kTempDown & KEY_START) 
 			{
 				printf("Ayylmao! This is aptMainLoop!\n");
-			}
+			}*/
 		}
 		else
 		{
