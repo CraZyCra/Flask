@@ -9,6 +9,6 @@ class Flask
 		~Flask();
 
 	private:
-		std::vector<Bubble> bubbles;
+		std::vector<Bubble> * bubbles;
 		sf2d_texture * bubbleGraphic;
 };

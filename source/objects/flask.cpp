@@ -3,36 +3,44 @@
 Flask::Flask()
 {
 	this->bubbleGraphic = sfil_load_PNG_file("graphics/bubble.png", SF2D_PLACE_RAM);
+	this->bubbles = new std::vector<Bubble>();
 }
 
 void Flask::update(float dt)
 {
-	for (int i = this->bubbles.capacity(); i > 0; i--)
+	printf("Bubble vector loop\n");
+	for (int i = 0; i < this->bubbles->size(); i++)
 	{
-		if (this->bubbles[i].shouldRemove())
+		printf("Checking if should remove\n");
+		if ((*this->bubbles)[i].shouldRemove() == true)
 		{
-			this->bubbles[i].resetBubble();
+			printf("Resetting bubble %d\n", i);
+			(*this->bubbles)[i].resetBubble();
 		}
 		else
 		{
-			this->bubbles[i].update(dt);
+			printf("Updating bubble %d\n", i);
+			(*this->bubbles)[i].update(dt);
+			printf("Updated\n");
 		}
 	}
 
-	if (this->bubbles.size() < 30)
+	if (this->bubbles->size() < 30)
 	{
+		printf("Checking for bubble spawn\n");
 		if (rand() % 10 + 1 == 1)
 		{
 			Bubble temp(bubbleGraphic);
-			this->bubbles.push_back(temp);
+			this->bubbles->push_back(temp);
 		}
 	}
 }
 
 void Flask::render()
 {
-	for (int i = 0; i < this->bubbles.size(); i++)
+	printf("Rednering bubbles n stuff\n");
+	for (int i = 0; i < this->bubbles->size(); i++)
 	{
-		this->bubbles[i].render();
+		(*this->bubbles)[i].render();
 	} 
 }

@@ -16,16 +16,22 @@ Bubble::Bubble(sf2d_texture * texture)
 
 void Bubble::update(float dt)
 {
+	printf("Moving y coordinate\n");
 	this->y = this->y - dt;
+
+	printf("Checking current screen\n");
 	if (this->currentScreen == "bottom") 
 	{
+		printf("Checking to move to top screen\n");
 		if (this->y + this->height < 0)
 		{
+			printf("Moved\n");
 			this->currentScreen = "top";
 		}
 	}
 	else
 	{
+		printf("Resetting bubble\n");
 		this->remove = true;
 	}
 }

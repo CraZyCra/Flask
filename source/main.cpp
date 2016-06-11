@@ -90,7 +90,7 @@ int main()
 
 	ptmuInit();
 
-	//consoleInit(GFX_BOTTOM, NULL);
+	consoleInit(GFX_BOTTOM, NULL);
 	
 	sf2d_set_clear_color(RGBA8(61, 142, 185, 0xFF)); // Reset background color.
 
@@ -108,16 +108,18 @@ int main()
 
 	Flask * flask;
 
-	OggVorbis * backgroundMusic = new OggVorbis("audio/bgm.ogg");
-	backgroundMusic->setLooping(true);
-	backgroundMusic->play();
+	//OggVorbis * backgroundMusic = new OggVorbis("audio/bgm.ogg");
+	//backgroundMusic->setLooping(true);
+	//backgroundMusic->play();
 
 	while (aptMainLoop())
 	{
 		if (!hasError)
 		{
+			printf("Updating Flask\n");
 			flask->update(deltaStep()); //wee
-
+			printf("Updated\n");
+			
 			//Start top screen
 			sf2d_start_frame(GFX_TOP, GFX_LEFT);
 
@@ -126,11 +128,11 @@ int main()
 			sf2d_end_frame();
 		
 			//Start bottom screen
-			sf2d_start_frame(GFX_BOTTOM, GFX_LEFT);
+			//sf2d_start_frame(GFX_BOTTOM, GFX_LEFT);
 
-			flask->render();
+			//flask->render();
 
-			sf2d_end_frame();
+			//sf2d_end_frame();
 
 			sf2d_swapbuffers();
 
