@@ -11,4 +11,5 @@ class Flask
 	private:
 		std::vector<Bubble> * bubbles;
 		sf2d_texture * bubbleGraphic;
+		float bubbleTimer;
 };

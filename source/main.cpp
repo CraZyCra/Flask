@@ -46,16 +46,22 @@ u32 getCurrentColor()
 	return RGBA8(currentR, currentG, currentB, currentA);
 }
 
-void setScreen(const char * screen)
+void setScreen(int screen)
 {
-	if (strcmp(screen, "top") == 0) 
+	currentScreen = screen;
+}
+
+void draw(sf2d_texture * texture, int x, int y)
+{
+	if (sf2d_get_current_screen() == getCurrentScreen()) 
 	{
-		currentScreen = GFX_TOP;
-	} 
-	else if (strcmp(screen, "top") == 0) 
-	{
-		currentScreen = GFX_BOTTOM;
+		sf2d_draw_texture_blend(texture, x, y, getCurrentColor());
 	}
+}
+
+int getCurrentScreen()
+{
+	return currentScreen;
 }
 
 float deltaStep()
@@ -75,13 +81,19 @@ float deltaStep()
 
 void displayError(const char * error)
 {
+	sf2d_set_clear_color(RGBA8(0, 0, 0, 0xFF));
+
 	hasError = true;
+
+	consoleInit(GFX_BOTTOM, NULL);
 
 	printf("\n\x1b[31mError: %s\x1b[0m\nPress 'Start' to quit.\n", error);
 }
 
 int main()
 {
+	srand(osGetTime());
+
 	sf2d_init(); // 2D Drawing lib.
 
 	//sftd_init(); // Text Drawing lib.
@@ -90,7 +102,7 @@ int main()
 
 	ptmuInit();
 
-	consoleInit(GFX_BOTTOM, NULL);
+	//consoleInit(GFX_BOTTOM, NULL);
 	
 	sf2d_set_clear_color(RGBA8(61, 142, 185, 0xFF)); // Reset background color.
 
@@ -106,20 +118,18 @@ int main()
 
 	deltaStep();
 
-	Flask * flask;
+	Flask * flask = new Flask();
 
-	//OggVorbis * backgroundMusic = new OggVorbis("audio/bgm.ogg");
-	//backgroundMusic->setLooping(true);
-	//backgroundMusic->play();
+	OggVorbis * backgroundMusic = new OggVorbis("audio/title.ogg");
+	backgroundMusic->setLooping(true);
+	backgroundMusic->play();
 
 	while (aptMainLoop())
 	{
 		if (!hasError)
 		{
-			printf("Updating Flask\n");
 			flask->update(deltaStep()); //wee
-			printf("Updated\n");
-			
+
 			//Start top screen
 			sf2d_start_frame(GFX_TOP, GFX_LEFT);
 
@@ -128,20 +138,17 @@ int main()
 			sf2d_end_frame();
 		
 			//Start bottom screen
-			//sf2d_start_frame(GFX_BOTTOM, GFX_LEFT);
+			sf2d_start_frame(GFX_BOTTOM, GFX_LEFT);
 
-			//flask->render();
+			flask->render();
 
-			//sf2d_end_frame();
+			sf2d_end_frame();
 
 			sf2d_swapbuffers();
 
-			/*hidScanInput();
-			u32 kTempDown = hidKeysDown();
-			if (kTempDown & KEY_START) 
-			{
-				printf("Ayylmao! This is aptMainLoop!\n");
-			}*/
+			/*
+			hidScanInput();
+			*/
 		}
 		else
 		{

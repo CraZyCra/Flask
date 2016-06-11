@@ -11,10 +11,10 @@ class Bubble
 
 	private:
 		sf2d_texture * graphic;
-		int x;
-		int y;
+		float x;
+		float y;
 		int width;
 		int height;
-		const char * currentScreen;
+		int currentScreen;
 		bool remove;
 };

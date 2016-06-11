@@ -3,10 +3,11 @@
 OggVorbis::OggVorbis(const char * filename)
 {
 	FILE * oggFile = fopen(filename, "rb"); //Open for reading in binary mode
+	OggVorbis_File vorbisFile;
 
 	if (oggFile != NULL)
 	{
-		if (ov_open(oggFile, &this->vorbisFile, NULL, 0) < 0) 
+		if (ov_open(oggFile, &vorbisFile, NULL, 0) < 0) 
 		{
 			displayError("Ogg input does not appear to be a valid ogg vorbis file or doesn't exist.");
 
@@ -14,7 +15,7 @@ OggVorbis::OggVorbis(const char * filename)
 		}
 
 		// Decoding Ogg Vorbis bitstream
-		vorbis_info * vorbisInfo = ov_info(&this->vorbisFile, -1);
+		vorbis_info * vorbisInfo = ov_info(&vorbisFile, -1);
 
 		if (vorbisInfo == NULL) 
 		{
@@ -29,7 +30,7 @@ OggVorbis::OggVorbis(const char * filename)
 
 		this->encoding = NDSP_ENCODING_PCM16;
 
-		this->nsamples = (u32)ov_pcm_total(&this->vorbisFile, -1);
+		this->nsamples = (u32)ov_pcm_total(&vorbisFile, -1);
 
 		this->size = this->nsamples * this->channels * 2; // *2 because output is PCM16 (2 bytes/sample)
 
@@ -52,7 +53,7 @@ OggVorbis::OggVorbis(const char * filename)
 		int currentSection;
 
 		while (!endOfFile) {
-			long ret = ov_read(&this->vorbisFile, &this->data[offset], 4096, &currentSection);
+			long ret = ov_read(&vorbisFile, &this->data[offset], 4096, &currentSection);
 
 			if (ret == 0)
 			{
@@ -60,7 +61,7 @@ OggVorbis::OggVorbis(const char * filename)
 			} 
 			else if (ret < 0) 
 			{
-				ov_clear(&this->vorbisFile);
+				ov_clear(&vorbisFile);
 
 				linearFree(this->data);
 
@@ -74,13 +75,11 @@ OggVorbis::OggVorbis(const char * filename)
 			}
 		}
 
-		linearFree(&this->vorbisFile);
+		linearFree(&vorbisFile);
 
-		ov_clear(&this->vorbisFile);
+		ov_clear(&vorbisFile);
 
 		fclose(oggFile);
-
-		printf("Successfully loaded %s\n", filename);
 	}
 	else
 	{
@@ -112,14 +111,10 @@ int OggVorbis::getOpenChannel()
 	return -1;
 }
 
-int OggVorbis::play()
+void OggVorbis::play()
 {
-	printf("Playing audio source!\n");
-
 	if (this->audiochannel == -1) {
 		displayError("No available audio channel");
-
-		return 1;
 	}
 
 	ndspChnWaveBufClear(this->audiochannel);
@@ -147,20 +142,14 @@ int OggVorbis::play()
 	DSP_FlushDataCache((u32 *)this->data, this->size);
 
 	ndspChnWaveBufAdd(this->audiochannel, waveBuf);
-
-	return 0;
 }
 
-int OggVorbis::stop()
+void OggVorbis::stop()
 {
 	ndspChnWaveBufClear(this->audiochannel);
-
-	return 0;
 }
 
-int OggVorbis::setLooping(bool enable)
+void OggVorbis::setLooping(bool enable)
 {
 	this->loop = enable;
-
-	return 0;
 }

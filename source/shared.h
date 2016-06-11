@@ -36,6 +36,7 @@ extern void displayError(const char * error);
 extern bool romfsEnabled;
 extern float delta;
 extern bool channelList[24];
+extern int getCurrentScreen();
 
 //Class includes
 #include "include/oggvorbis.h"
