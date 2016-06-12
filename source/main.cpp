@@ -51,14 +51,6 @@ void setScreen(int screen)
 	currentScreen = screen;
 }
 
-void draw(sf2d_texture * texture, int x, int y)
-{
-	if (sf2d_get_current_screen() == getCurrentScreen()) 
-	{
-		sf2d_draw_texture_blend(texture, x, y, getCurrentColor());
-	}
-}
-
 int getCurrentScreen()
 {
 	return currentScreen;
@@ -96,7 +88,7 @@ int main()
 
 	sf2d_init(); // 2D Drawing lib.
 
-	//sftd_init(); // Text Drawing lib.
+	sftd_init(); // Text Drawing lib.
 
 	cfguInit();
 
@@ -172,7 +164,7 @@ int main()
 		}
 	}
 
-	//sftd_fini();
+	sftd_fini();
 
 	sf2d_fini();
 

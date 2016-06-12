@@ -10,7 +10,7 @@ class Bubble
 		bool shouldRemove();
 
 	private:
-		sf2d_texture * graphic;
+		Image * graphic;
 		float x;
 		float y;
 		int width;

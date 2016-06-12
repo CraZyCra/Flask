@@ -2,7 +2,7 @@
 
 Bubble::Bubble(sf2d_texture * texture)
 {
-	this->graphic = texture;
+	this->graphic = new Image(texture);
 	
 	this->x = rand() % 320 + 40;
 	this->y = 240;
@@ -33,9 +33,9 @@ void Bubble::update(float dt)
 }
 
 void Bubble::render()
-{
+{	
 	setScreen(this->currentScreen);
-	draw(this->graphic, this->x, this->y);
+	this->graphic->render(this->x, this->y);
 }
 
 void Bubble::resetBubble()

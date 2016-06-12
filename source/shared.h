@@ -14,6 +14,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <vector>
+#include <ctime>
 
 //Net stuff
 #include <sys/socket.h>
@@ -38,5 +39,9 @@ extern int getCurrentScreen();
 
 //Class includes
 #include "include/oggvorbis.h"
+#include "include/quad.h"
+#include "include/image.h"
+#include "include/font.h"
+
 #include "include/bubble.h"
 #include "include/flask.h"
