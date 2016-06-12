@@ -120,7 +120,7 @@ int main()
 
 	Flask * flask = new Flask();
 
-	OggVorbis * backgroundMusic = new OggVorbis("audio/title.ogg");
+	OggVorbis * backgroundMusic = new OggVorbis("audio/bgm.ogg");
 	backgroundMusic->setLooping(true);
 	backgroundMusic->play();
 

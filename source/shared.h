@@ -29,8 +29,6 @@
 
 //Util
 #include "include/util.h"
-#include "include/bubble.h"
-#include "include/flask.h"
 
 extern void displayError(const char * error);
 extern bool romfsEnabled;
@@ -40,3 +38,5 @@ extern int getCurrentScreen();
 
 //Class includes
 #include "include/oggvorbis.h"
+#include "include/bubble.h"
+#include "include/flask.h"

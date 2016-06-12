@@ -7,6 +7,13 @@ OggVorbis::OggVorbis(const char * filename)
 
 	if (oggFile != NULL)
 	{
+		for (int i=0; i < 12; i++) 
+		{
+			this->mix[i] = 1.0f;
+		}
+
+		this->interp = NDSP_INTERP_LINEAR;
+
 		if (ov_open(oggFile, &vorbisFile, NULL, 0) < 0) 
 		{
 			displayError("Ogg input does not appear to be a valid ogg vorbis file or doesn't exist.");
