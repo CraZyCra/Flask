@@ -29,6 +29,8 @@ Flask::Flask()
 	this->searchDisplay = new Image(this->searchTexture);
 
 	this->interfacFont = new Font("fonts/LiberationSans-Regular.ttf", 14);
+
+	this->cursorSound = new OggVorbis("audio/cursor.ogg");
 }
 
 void Flask::update(float dt)
@@ -80,9 +82,22 @@ void Flask::render()
 
 	setScreen(GFX_BOTTOM);
 
+	setColor(255, 255, 255);
 	this->listDisplay->render(320 * 1/4 - 8, 220);
 
+	setColor(117, 112, 107);
 	this->updateDisplay->render(320 * 1/2 - 8, 220);
 
+	setColor(117, 112, 107);
 	this->searchDisplay->render(320 * 3/4 - 8, 220);
+
+	setColor(255, 255, 255);
+}
+
+void Flask::keyPressed(u32 key)
+{
+	if (key & KEY_START)
+	{
+		this->cursorSound->play();
+	}
 }

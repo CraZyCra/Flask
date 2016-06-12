@@ -1,12 +1,14 @@
 #include <shared.h>
 
-OggVorbis::OggVorbis(const char * filename)
+OggVorbis::OggVorbis(const char * filename, const char * mode)
 {
 	FILE * oggFile = fopen(filename, "rb"); //Open for reading in binary mode
 	OggVorbis_File vorbisFile;
 
 	if (oggFile != NULL)
 	{
+		this->mode = mode;
+		
 		for (int i=0; i < 12; i++) 
 		{
 			this->mix[i] = 1.0f;

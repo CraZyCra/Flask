@@ -29,7 +29,7 @@ include $(DEVKITARM)/3ds_rules
 
 TARGET		:=	$(notdir $(CURDIR))
 BUILD		:=	build
-SOURCES		:=	source source/objects source/libs/tremor
+SOURCES		:=	source source/modules source/objects source/libs/tremor
 DATA 		:= 	data
 INCLUDES	:=	source source/include source/libs/tremor source/libs/sf2dlib/include source/libs/sftdlib/include source/libs/sfillib/include
 

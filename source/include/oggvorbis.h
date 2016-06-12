@@ -3,7 +3,7 @@
 class OggVorbis
 {
 	public:
-		OggVorbis(const char * filename);
+		OggVorbis(const char * filename, const char * mode);
 		void play();
 		void setLooping(bool enable);
 		void stop();
@@ -22,6 +22,7 @@ class OggVorbis
 		
 		float mix[12];
 		ndspInterpType interp;
+		const char * mode;
 
 		int getOpenChannel();
 };

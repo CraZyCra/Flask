@@ -5,6 +5,7 @@ class Flask
 	public:
 		void update(float dt);
 		void render();
+		void keyPressed(u32 key);
 		Flask();
 		~Flask();
 
@@ -23,6 +24,8 @@ class Flask
 		Image * listDisplay;
 		Image * updateDisplay;
 		Image * searchDisplay;
+		
+		OggVorbis * cursorSound;
 		
 		float bubbleTimer;
 		std::vector<Quad> * batteryQuads;

@@ -35,13 +35,18 @@ extern void displayError(const char * error);
 extern bool romfsEnabled;
 extern float delta;
 extern bool channelList[24];
-extern int getCurrentScreen();
+extern int currentScreen;
 
 //Class includes
 #include "include/oggvorbis.h"
+#include "include/graphics.h"
 #include "include/quad.h"
 #include "include/image.h"
 #include "include/font.h"
 
 #include "include/bubble.h"
 #include "include/flask.h"
+
+#define SAMPLERATE 44100
+#define SAMPLESPERBUFFER (SAMPLERATE / 30)
+#define BYTESPERSAMPLE 4

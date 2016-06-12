@@ -30,31 +30,9 @@ bool hasError = false;
 bool forceQuit = false;
 bool audioEnabled = false;
 
-int currentR = 0xFF;
-int currentG = 0xFF;
-int currentB = 0xFF;
-int currentA = 0xFF;
-
-int currentScreen = GFX_BOTTOM;
-
 int prevTime = 0;
 int currTime = 0;
 float dt;
-
-u32 getCurrentColor() 
-{
-	return RGBA8(currentR, currentG, currentB, currentA);
-}
-
-void setScreen(int screen)
-{
-	currentScreen = screen;
-}
-
-int getCurrentScreen()
-{
-	return currentScreen;
-}
 
 float deltaStep()
 {
@@ -112,7 +90,7 @@ int main()
 
 	Flask * flask = new Flask();
 
-	OggVorbis * backgroundMusic = new OggVorbis("audio/bgm.ogg");
+	OggVorbis * backgroundMusic = new OggVorbis("audio/bgm.ogg", "stream");
 	backgroundMusic->setLooping(true);
 	backgroundMusic->play();
 
@@ -120,6 +98,8 @@ int main()
 	{
 		if (!hasError)
 		{
+			flask->keyPressed(hidKeysDown());
+
 			flask->update(deltaStep()); //wee
 
 			//Start top screen
@@ -137,10 +117,6 @@ int main()
 			sf2d_end_frame();
 
 			sf2d_swapbuffers();
-
-			/*
-			hidScanInput();
-			*/
 		}
 		else
 		{
