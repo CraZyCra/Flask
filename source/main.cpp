@@ -30,9 +30,17 @@ bool hasError = false;
 bool forceQuit = false;
 bool audioEnabled = false;
 
+bool consoleEnabled = true;
+
 int prevTime = 0;
 int currTime = 0;
 float dt;
+
+Font * nameFont;
+Font * descriptionFont;
+Font * authorFont;
+
+std::vector<Application> * applications;
 
 float deltaStep()
 {
@@ -72,8 +80,11 @@ int main()
 
 	ptmuInit();
 
-	//consoleInit(GFX_BOTTOM, NULL);
+	if (consoleEnabled) consoleInit(GFX_BOTTOM, NULL);
 	
+	printf("Initializing http:C\n");
+	httpcInit(0x1000);
+
 	sf2d_set_clear_color(RGBA8(61, 142, 185, 0xFF)); // Reset background color.
 
 	Result enableROMFS = romfsInit();
@@ -84,15 +95,23 @@ int main()
 
 	if (romfsEnabled) chdir("romfs:/");
 
-	if (!audioEnabled) displayError("DSP Failed to initialize. Please dump your DSPFirm!");
+	if (!audioEnabled) displayError("DSP Failed to initialize. Please dump your DSP Firm!");
 
 	deltaStep();
 
 	Flask * flask = new Flask();
 
-	OggVorbis * backgroundMusic = new OggVorbis("audio/bgm.ogg", "stream");
+	OggVorbis * backgroundMusic = new OggVorbis("audio/bgm.ogg");
 	backgroundMusic->setLooping(true);
 	backgroundMusic->play();
+
+	nameFont = new Font("fonts/LiberationSans-Bold.ttf", 16);
+	descriptionFont = new Font("fonts/LiberationSans-Regular.ttf", 16);
+	authorFont = new Font("fonts/LiberationSans-Italic.ttf", 16);
+
+	applications = new std::vector<Application>();
+
+	cacheData();
 
 	while (aptMainLoop())
 	{
@@ -110,11 +129,14 @@ int main()
 			sf2d_end_frame();
 		
 			//Start bottom screen
-			sf2d_start_frame(GFX_BOTTOM, GFX_LEFT);
+			if (!consoleEnabled)
+			{
+				sf2d_start_frame(GFX_BOTTOM, GFX_LEFT);
 
-			flask->render();
+				flask->render();
 
-			sf2d_end_frame();
+				sf2d_end_frame();
+			}
 
 			sf2d_swapbuffers();
 		}
@@ -147,6 +169,8 @@ int main()
 	cfguExit();
 
 	ptmuExit();
+
+	httpcExit();
 
 	if (romfsEnabled) romfsExit();
 

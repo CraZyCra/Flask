@@ -1,6 +1,6 @@
-#include <shared.h>
+#include "shared.h"
 
-OggVorbis::OggVorbis(const char * filename, const char * mode)
+OggVorbis::OggVorbis(const char * filename)
 {
 	FILE * oggFile = fopen(filename, "rb"); //Open for reading in binary mode
 	OggVorbis_File vorbisFile;

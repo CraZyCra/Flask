@@ -5,6 +5,7 @@
 #include <3ds.h>
 
 //Standard libs
+#include <malloc.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -15,6 +16,7 @@
 #include <unistd.h>
 #include <vector>
 #include <ctime>
+#include <sstream>
 
 //Net stuff
 #include <sys/socket.h>
@@ -46,7 +48,15 @@ extern int currentScreen;
 
 #include "include/bubble.h"
 #include "include/flask.h"
+#include "include/application.h"
+
+extern Font * nameFont;
+extern Font * descriptionFont;
+extern Font * authorFont;
+
+extern std::vector<Application> * applications;
 
 #define SAMPLERATE 44100
 #define SAMPLESPERBUFFER (SAMPLERATE / 30)
 #define BYTESPERSAMPLE 4
+#define IFNULL(x, y) (x) ? (x) : (y)

@@ -1,4 +1,4 @@
-#include <shared.h>
+#include "shared.h"
 
 Flask::Flask()
 {
@@ -81,6 +81,14 @@ void Flask::render()
 	this->wifiSignal->render(3, 0);
 
 	setScreen(GFX_BOTTOM);
+
+	setColor(255, 255, 255);
+
+	printf("Looping through apps to render.\n");
+	for (int i = 0; i < applications->size(); i++)
+	{
+		(*applications)[i].render();
+	}
 
 	setColor(255, 255, 255);
 	this->listDisplay->render(320 * 1/4 - 8, 220);

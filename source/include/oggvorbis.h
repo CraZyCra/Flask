@@ -3,7 +3,7 @@
 class OggVorbis
 {
 	public:
-		OggVorbis(const char * filename, const char * mode);
+		OggVorbis(const char * filename);
 		void play();
 		void setLooping(bool enable);
 		void stop();
