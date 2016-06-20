@@ -39,6 +39,8 @@ extern float delta;
 extern bool channelList[24];
 extern int currentScreen;
 
+#include "libs/json/json.h"
+
 //Class includes
 #include "include/oggvorbis.h"
 #include "include/graphics.h"
@@ -53,6 +55,8 @@ extern int currentScreen;
 extern Font * nameFont;
 extern Font * descriptionFont;
 extern Font * authorFont;
+extern Thread songThread;
+extern bool loadSong;
 
 extern std::vector<Application> * applications;
 

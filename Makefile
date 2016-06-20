@@ -29,9 +29,9 @@ include $(DEVKITARM)/3ds_rules
 
 TARGET		:=	$(notdir $(CURDIR))
 BUILD		:=	build
-SOURCES		:=	source source/modules source/objects source/libs/tremor
+SOURCES		:=	source source/libs/json source/modules source/objects source/libs/tremor
 DATA 		:= 	data
-INCLUDES	:=	source source/include source/libs/tremor source/libs/sf2dlib/include source/libs/sftdlib/include source/libs/sfillib/include
+INCLUDES	:=	source source/include source/libs/tremor source/libs/sf2dlib/include source/libs/sftdlib/include source/libs/sfillib/include source/libs/json
 
 APP_TITLE	:=	Flask
 APP_AUTHOR	:=	TurtleP
@@ -72,7 +72,7 @@ UNAME := $(shell uname)
 # list of directories containing libraries, this must be the top level containing
 # include and lib
 #---------------------------------------------------------------------------------
-LIBDIRS	:= $(CTRULIB) $(PORTLIBS) $(CURDIR)/source/libs/libsf2d $(CURDIR)/source/libs/libsfil $(CURDIR)/source/libs/libsftd $(CURDIR)/source/libs/tremor
+LIBDIRS	:= $(CTRULIB) $(PORTLIBS) $(CURDIR)/source/libs/libsf2d $(CURDIR)/source/libs/libsfil $(CURDIR)/source/libs/libsftd $(CURDIR)/source/libs/tremor $(CURDIR)/source/libs/json
 
 
 #---------------------------------------------------------------------------------

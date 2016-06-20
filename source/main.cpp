@@ -29,8 +29,12 @@ bool channelList[24];
 bool hasError = false;
 bool forceQuit = false;
 bool audioEnabled = false;
+bool loadSong = false;
 
 bool consoleEnabled = true;
+
+Thread songThread;
+s32 threadPriority = 0;
 
 int prevTime = 0;
 int currTime = 0;
@@ -59,11 +63,19 @@ float deltaStep()
 
 void displayError(const char * error)
 {
+	FILE * file = fopen("sdmc:/Flask.txt", "w");
+
+	fwrite(error, strlen(error), 1, file);
+
+	fflush(file);
+
+	fclose(file);
+	
 	sf2d_set_clear_color(RGBA8(0, 0, 0, 0xFF));
 
 	hasError = true;
 
-	consoleInit(GFX_BOTTOM, NULL);
+	consoleInit(GFX_TOP, NULL);
 
 	printf("\n\x1b[31mError: %s\x1b[0m\nPress 'Start' to quit.\n", error);
 }
@@ -81,9 +93,6 @@ int main()
 	ptmuInit();
 
 	if (consoleEnabled) consoleInit(GFX_BOTTOM, NULL);
-	
-	printf("Initializing http:C\n");
-	httpcInit(0x1000);
 
 	sf2d_set_clear_color(RGBA8(61, 142, 185, 0xFF)); // Reset background color.
 
@@ -97,21 +106,23 @@ int main()
 
 	if (!audioEnabled) displayError("DSP Failed to initialize. Please dump your DSP Firm!");
 
+	httpcInit(0);
+
 	deltaStep();
 
-	Flask * flask = new Flask();
+	svcGetThreadPriority(&threadPriority, CUR_THREAD_HANDLE);
 
-	OggVorbis * backgroundMusic = new OggVorbis("audio/bgm.ogg");
-	backgroundMusic->setLooping(true);
-	backgroundMusic->play();
+	songThread = threadCreate(loadBackgroundSong, NULL, 1024, threadPriority - 1, -2, true);
 
 	nameFont = new Font("fonts/LiberationSans-Bold.ttf", 16);
 	descriptionFont = new Font("fonts/LiberationSans-Regular.ttf", 16);
-	authorFont = new Font("fonts/LiberationSans-Italic.ttf", 16);
+	//authorFont = new Font("fonts/LiberationSans-Italic.ttf", 16);
 
 	applications = new std::vector<Application>();
 
 	cacheData();
+
+	Flask * flask = new Flask();
 
 	while (aptMainLoop())
 	{
@@ -142,23 +153,14 @@ int main()
 		}
 		else
 		{
-			sf2d_start_frame(GFX_TOP, GFX_LEFT);
-
-			sf2d_end_frame();
-
-			//Start bottom screen
-			/*sf2d_start_frame(GFX_BOTTOM, GFX_LEFT);
-
-			sf2d_end_frame();*/
-
 			hidScanInput();
+
 			u32 kTempDown = hidKeysDown();
+
 			if (kTempDown & KEY_START) 
 			{
 				break;
 			}
-
-			sf2d_swapbuffers();
 		}
 	}
 
