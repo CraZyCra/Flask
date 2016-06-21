@@ -30,9 +30,6 @@
 #include <ivorbiscodec.h>
 #include <ivorbisfile.h>
 
-//Util
-#include "include/util.h"
-
 extern void displayError(const char * error);
 extern bool romfsEnabled;
 extern float delta;
@@ -52,12 +49,16 @@ extern int currentScreen;
 #include "include/flask.h"
 #include "include/application.h"
 
+//Util
+#include "include/util.h"
+
 extern Font * nameFont;
 extern Font * descriptionFont;
 extern Font * authorFont;
 extern Thread songThread;
 extern bool loadSong;
 
+extern std::vector<Quad> * icons;
 extern std::vector<Application> * applications;
 
 #define SAMPLERATE 44100

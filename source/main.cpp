@@ -45,6 +45,7 @@ Font * descriptionFont;
 Font * authorFont;
 
 std::vector<Application> * applications;
+std::vector<Quad> * icons;
 
 float deltaStep()
 {
@@ -119,6 +120,7 @@ int main()
 	//authorFont = new Font("fonts/LiberationSans-Italic.ttf", 16);
 
 	applications = new std::vector<Application>();
+	icons = new std::vector<Quad>();
 
 	cacheData();
 

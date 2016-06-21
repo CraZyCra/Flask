@@ -3,7 +3,7 @@
 class Application
 {
 	public:
-		Application(float x, float y, const char * name, const char * author, const char * description);
+		Application(float x, float y, const char * name, const char * author, const char * description. int quadID);
 		void setIcon(Image * icon);
 		void render();
 		void setDownloadURL(const char * url);

@@ -2,6 +2,6 @@ float deltaStep();
 
 void cacheData();
 
-void generateIcons();
+void downloadFile(const char * url, const char * filename);
 
 void loadBackgroundSong(void * arg);

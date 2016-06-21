@@ -22,10 +22,23 @@ int Font::getHeight()
 	return this->size;
 }
 
+void Font::setSize(int size)
+{
+	this->size = size;
+}
+
 void Font::print(const char * text, float x, float y)
 {
 	if (sf2d_get_current_screen() == getCurrentScreen()) 
 	{
 		sftd_draw_text(this->font, x, y, getCurrentColor(), this->size, text);
+	}
+}
+
+void Font::print(const char * text, float x, float y, int size)
+{
+	if (sf2d_get_current_screen() == getCurrentScreen()) 
+	{
+		sftd_draw_text(this->font, x, y, getCurrentColor(), size, text);
 	}
 }

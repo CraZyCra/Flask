@@ -1,3 +1,1 @@
-[
-	["FBI", "Steveice10", "Open Source CIA Installer", "https://github.com/Steveice10/FBI/releases/download/2.3.1/FBI.cia", "https://raw.githubusercontent.com/Steveice10/FBI/master/meta/icon.png"]
-]
+FBI;Steveice10;Open Source CIA Installer;https://github.com/Steveice10/FBI/releases/download/2.3.1/FBI.cia;
