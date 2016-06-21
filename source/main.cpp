@@ -31,10 +31,7 @@ bool forceQuit = false;
 bool audioEnabled = false;
 bool loadSong = false;
 
-bool consoleEnabled = true;
-
-Thread songThread;
-s32 threadPriority = 0;
+bool consoleEnabled = false;
 
 int prevTime = 0;
 int currTime = 0;
@@ -63,15 +60,7 @@ float deltaStep()
 }
 
 void displayError(const char * error)
-{
-	FILE * file = fopen("sdmc:/Flask.txt", "w");
-
-	fwrite(error, strlen(error), 1, file);
-
-	fflush(file);
-
-	fclose(file);
-	
+{	
 	sf2d_set_clear_color(RGBA8(0, 0, 0, 0xFF));
 
 	hasError = true;
@@ -109,15 +98,17 @@ int main()
 
 	httpcInit(0);
 
+	mkdir("sdmc:/flask", 0777);
+
 	deltaStep();
 
-	svcGetThreadPriority(&threadPriority, CUR_THREAD_HANDLE);
-
-	songThread = threadCreate(loadBackgroundSong, NULL, 1024, threadPriority - 1, -2, true);
+	OggVorbis * backgroundMusic = new OggVorbis("audio/bgm.ogg");
+	backgroundMusic->setLooping(true);
+	backgroundMusic->play();
 
 	nameFont = new Font("fonts/LiberationSans-Bold.ttf", 16);
 	descriptionFont = new Font("fonts/LiberationSans-Regular.ttf", 16);
-	//authorFont = new Font("fonts/LiberationSans-Italic.ttf", 16);
+	authorFont = new Font("fonts/LiberationSans-Italic.ttf", 16);
 
 	applications = new std::vector<Application>();
 	icons = new std::vector<Quad>();

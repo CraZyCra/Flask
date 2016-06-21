@@ -16,7 +16,7 @@ std::vector<char *> split(char * string, char * delim)
 	return array;
 }
 
-void downloadFile(const char * url, const char * filename)
+void downloadFile(char * url, char * filename)
 {
 	httpcContext httpContext;
 
@@ -48,12 +48,16 @@ void downloadFile(const char * url, const char * filename)
 
 	httpcDownloadData(&httpContext, buffer, size, NULL);
 
-	char filepath[] = "sdmc:/flask/";
+	printf("Making filepath\n");
+	char * sdmcPath = "sdmc:/flask/";
 
-	strcpy(filepath, filename);
-	strcat(filepath, ".png");
+	char * fullpath = (char *)malloc(strlen(sdmcPath) + strlen(filename) + 1);
 
-	FILE * downloadedFile = fopen(filepath, "w");
+	strcpy(fullpath, sdmcPath);
+
+	strcat(fullpath, filename);
+
+	FILE * downloadedFile = fopen(fullpath, "w");
 
 	fwrite(buffer, size, 1, downloadedFile);
 
@@ -62,15 +66,19 @@ void downloadFile(const char * url, const char * filename)
 	fclose(downloadedFile);
 
 	httpcCloseContext(&httpContext);
+
+	free(fullpath);
 }
 
 void cacheData()
 {
+	printf("Downloading homebrew.txt\n");
 	downloadFile("https://raw.githubusercontent.com/TurtleP/Flask/master/homebrew.txt", "homebrew.txt");
 
+	printf("Downloading icons.png\n");
 	downloadFile("https://raw.githubusercontent.com/TurtleP/Flask/master/icons.png", "icons.png");
 
-	sf2d_texture * texture = sfil_load_PNG_file("sdmc:/flask/icons.png");
+	sf2d_texture * texture = sfil_load_PNG_file("sdmc:/flask/icons.png", SF2D_PLACE_RAM);
 
 	for (int i = 1; i < 10; i++)
 	{
@@ -102,16 +110,26 @@ void cacheData()
     {
         data = split(newLines[i], ";");
  
-        Application temp(24, 22 + (i * 64), data[0], data[1], data[2], i);
+        Application temp(24, 24 + (i * 64), data[0], data[1], data[2], i);
         temp.setDownloadURL(data[3]);
+
+        Image * tempIcon = new Image(texture);
+        temp.setIcon(tempIcon);
  
         applications->push_back(temp);
     }
 }
 
-void loadBackgroundSong(void * arg)
+void setScissor(u32 x, u32 y, u32 width, u32 height)
 {
-	OggVorbis backgroundMusic("audio/bgm.ogg");
-	backgroundMusic.setLooping(true);
-	backgroundMusic.play();
+	if (sf2d_get_current_screen() == getCurrentScreen()) 
+	{
+		GPU_SCISSORMODE mode = GPU_SCISSOR_NORMAL;
+
+		if (!x && !y && !width && !height) {
+			mode = GPU_SCISSOR_DISABLE;
+		}
+
+		sf2d_set_scissor_test(mode, x, y, width, height);
+	}
 }

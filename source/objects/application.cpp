@@ -28,5 +28,5 @@ void Application::render()
 
 	nameFont->print(this->name, this->x + 52, this->y + 4);
 
-	descriptionFont->print(this->description, this->x + 52, this->y + 18);
+	authorFont->print(this->author, this->x + 52, this->y + 24);
 }

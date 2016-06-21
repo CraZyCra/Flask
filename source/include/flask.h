@@ -29,5 +29,4 @@ class Flask
 		
 		float bubbleTimer;
 		std::vector<Quad> * batteryQuads;
-		Font * interfaceFont;
 };

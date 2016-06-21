@@ -1,1 +1,3 @@
+Draw Attack;TheCruel;Multiplayer drawing battle game;https://github.com/Cruel/DrawAttack/releases/download/1.3/DrawAttack.cia;
 FBI;Steveice10;Open Source CIA Installer;https://github.com/Steveice10/FBI/releases/download/2.3.1/FBI.cia;
+freeShop;TheCruel;Open source eShop clone;https://github.com/Cruel/freeShop/releases/download/1.2.1/freeShop-1.2.1.cia;

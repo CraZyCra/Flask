@@ -23,7 +23,6 @@ OggVorbis::OggVorbis(const char * filename)
 			return;
 		}
 
-		// Decoding Ogg Vorbis bitstream
 		vorbis_info * vorbisInfo = ov_info(&vorbisFile, -1);
 
 		if (vorbisInfo == NULL) 
@@ -56,12 +55,12 @@ OggVorbis::OggVorbis(const char * filename)
 
 		this->data = (char *)linearAlloc(this->size);
 
-		// Decoding loop
 		int offset = 0;
 		int endOfFile = 0;
 		int currentSection;
 
 		while (!endOfFile) {
+
 			long ret = ov_read(&vorbisFile, &this->data[offset], 4096, &currentSection);
 
 			if (ret == 0)
@@ -83,8 +82,6 @@ OggVorbis::OggVorbis(const char * filename)
 				offset += ret;
 			}
 		}
-
-		linearFree(&vorbisFile);
 
 		ov_clear(&vorbisFile);
 

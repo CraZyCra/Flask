@@ -28,8 +28,6 @@ Flask::Flask()
 	this->updateDisplay = new Image(this->updateTexture);
 	this->searchDisplay = new Image(this->searchTexture);
 
-	this->interfaceFont = new Font("fonts/LiberationSans-Regular.ttf", 14);
-
 	this->cursorSound = new OggVorbis("audio/cursor.ogg");
 }
 
@@ -71,7 +69,7 @@ void Flask::render()
 	time_t t = time(NULL);
     const char * currentTime = ctime(&t);
 	
-	this->interfaceFont->print(currentTime, 200 - this->interfaceFont->getWidth(currentTime) / 2, 0);
+	descriptionFont->print(currentTime, 200 - descriptionFont->getWidth(currentTime) / 2, -2);
 
 	u8 batteryQuadi;
 	PTMU_GetBatteryLevel(&batteryQuadi);
@@ -85,8 +83,12 @@ void Flask::render()
 	setColor(255, 255, 255);
 
 	for (int i = 0; i < applications->size(); i++)
-	{
+	{	
+		setScissor(24, 24, 272, 192);
+		
 		(*applications)[i].render();
+
+		setScissor(NULL, NULL, NULL, NULL);
 	}
 
 	setColor(255, 255, 255);
