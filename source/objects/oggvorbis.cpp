@@ -159,3 +159,17 @@ void OggVorbis::setLooping(bool enable)
 {
 	this->loop = enable;
 }
+
+void OggVorbis::setVolume(float volume)
+{
+	if (volume > 1) volume = 1;
+
+	if (volume < 0) volume = 0;
+
+	for (int i = 0; i <= 3; i++)
+	{
+		this->mix[i] = volume;
+	}
+
+	ndspChnSetMix(this->audiochannel, this->mix);
+}

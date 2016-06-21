@@ -104,6 +104,7 @@ int main()
 
 	OggVorbis * backgroundMusic = new OggVorbis("audio/bgm.ogg");
 	backgroundMusic->setLooping(true);
+	backgroundMusic->setVolume(0.35);
 	backgroundMusic->play();
 
 	nameFont = new Font("fonts/LiberationSans-Bold.ttf", 16);
@@ -121,6 +122,8 @@ int main()
 	{
 		if (!hasError)
 		{
+			hidScanInput();
+			
 			flask->keyPressed(hidKeysDown());
 
 			flask->update(deltaStep()); //wee

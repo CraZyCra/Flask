@@ -8,7 +8,8 @@ class Bubble
 		void update(float dt);
 		void resetBubble();
 		bool shouldRemove();
-
+		int getZOrder();
+		
 	private:
 		Image * graphic;
 		float x;
@@ -17,4 +18,5 @@ class Bubble
 		int height;
 		int currentScreen;
 		bool remove;
+		int zOrder;
 };

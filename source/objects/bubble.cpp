@@ -12,6 +12,8 @@ Bubble::Bubble(sf2d_texture * texture)
 
 	this->currentScreen = GFX_BOTTOM;
 	this->remove = false;
+
+	this->zOrder = rand() % 2;
 }
 
 void Bubble::update(float dt)
@@ -50,4 +52,9 @@ void Bubble::resetBubble()
 bool Bubble::shouldRemove()
 {
 	return this->remove;
+}
+
+int Bubble::getZOrder()
+{
+	return this->zOrder;
 }

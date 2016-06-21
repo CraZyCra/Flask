@@ -36,7 +36,7 @@ extern float delta;
 extern bool channelList[24];
 extern int currentScreen;
 
-#include "libs/json/json.h"
+#define SCROLLRATE 4
 
 //Class includes
 #include "include/oggvorbis.h"
@@ -44,6 +44,7 @@ extern int currentScreen;
 #include "include/quad.h"
 #include "include/image.h"
 #include "include/font.h"
+#include "include/cursor.h"
 
 #include "include/bubble.h"
 #include "include/flask.h"
@@ -55,8 +56,6 @@ extern int currentScreen;
 extern Font * nameFont;
 extern Font * descriptionFont;
 extern Font * authorFont;
-extern Thread songThread;
-extern bool loadSong;
 
 extern std::vector<Quad> * icons;
 extern std::vector<Application> * applications;

@@ -29,4 +29,10 @@ class Flask
 		
 		float bubbleTimer;
 		std::vector<Quad> * batteryQuads;
+
+		Cursor * cursor;
+
+		int currentHomebrew;
+
+		float smoothScroll;
 };

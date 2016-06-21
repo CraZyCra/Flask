@@ -7,6 +7,10 @@ int currentA = 0xFF;
 
 int currentScreen = GFX_BOTTOM;
 
+int transX = 0;
+int transY = 0;
+bool isPushed = false;
+
 u32 getCurrentColor() 
 {
 	return RGBA8(currentR, currentG, currentB, currentA);
@@ -51,4 +55,39 @@ void screenShot() //for showing stuff being done
 	fwrite(gfxGetFramebuffer(GFX_BOTTOM, GFX_LEFT, NULL, NULL), 230400, 1, bottomScreen);
 
 	fclose(bottomScreen);
+}
+
+void translateCoords(int *x, int *y) {
+	if (isPushed) 
+	{
+		*x += transX;
+		*y += transY;
+	}
+}
+
+void translate(int dx, int dy)
+{
+	if (sf2d_get_current_screen() == currentScreen) 
+	{
+		transX = transX + dx;
+		transY = transY + dy;
+	}
+}
+
+void push()
+{
+	if (sf2d_get_current_screen() == currentScreen) 
+	{
+		isPushed = true;
+	}
+}
+
+void pop()
+{
+	if (sf2d_get_current_screen() == currentScreen) 
+	{
+		transX = 0;
+		transY = 0;
+		isPushed = false;
+	}
 }

@@ -9,6 +9,7 @@ class OggVorbis
 		void stop();
 		~OggVorbis();
 		OggVorbis();
+		void setVolume(float volume);
 
 	private:
 		float rate;

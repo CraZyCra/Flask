@@ -29,6 +29,11 @@ Flask::Flask()
 	this->searchDisplay = new Image(this->searchTexture);
 
 	this->cursorSound = new OggVorbis("audio/cursor.ogg");
+
+	this->cursor = new Cursor();
+
+	this->currentHomebrew = 0;
+	this->smoothScroll = 0;
 }
 
 void Flask::update(float dt)
@@ -55,13 +60,27 @@ void Flask::update(float dt)
 			this->bubbleTimer = rand() % 2 + 1;
 		}
 	}
+
+	this->cursor->update(dt);
+
+	if (this->currentHomebrew < applications->size() - 2)
+	{
+		smoothScroll = smoothScroll + ((this->currentHomebrew * 64) - this->smoothScroll) * SCROLLRATE * dt;
+	}
+	else
+	{
+		smoothScroll = smoothScroll + (((applications->size() - 3) * 64) - this->smoothScroll) * SCROLLRATE * dt;
+	}
 }
 
 void Flask::render()
 {	
 	for (int i = 0; i < (*this->bubbles).size(); i++)
 	{
-		(*this->bubbles)[i].render();
+		if ((*this->bubbles)[i].getZOrder() == 0)
+		{
+			(*this->bubbles)[i].render();
+		}
 	}
 
 	setScreen(GFX_TOP);
@@ -80,7 +99,13 @@ void Flask::render()
 
 	setScreen(GFX_BOTTOM);
 
+	this->cursor->render();
+
 	setColor(255, 255, 255);
+
+	push();
+
+	translate(0, -this->smoothScroll);
 
 	for (int i = 0; i < applications->size(); i++)
 	{	
@@ -90,6 +115,8 @@ void Flask::render()
 
 		setScissor(NULL, NULL, NULL, NULL);
 	}
+
+	pop();
 
 	setColor(255, 255, 255);
 	this->listDisplay->render(320 * 1/4 - 8, 220);
@@ -101,12 +128,34 @@ void Flask::render()
 	this->searchDisplay->render(320 * 3/4 - 8, 220);
 
 	setColor(255, 255, 255);
+
+	for (int i = 0; i < (*this->bubbles).size(); i++)
+	{
+		if ((*this->bubbles)[i].getZOrder() == 1)
+		{
+			(*this->bubbles)[i].render();
+		}
+	}
 }
 
 void Flask::keyPressed(u32 key)
 {
-	if (key & KEY_START)
+	if (key & KEY_DOWN)
 	{
-		this->cursorSound->play();
+		if (this->currentHomebrew < applications->size() - 1)
+		{
+			this->currentHomebrew = this->currentHomebrew + 1;
+			this->cursorSound->play();
+		}
 	}
+	else if (key & KEY_UP)
+	{
+		if (this->currentHomebrew > 0)
+		{
+			this->currentHomebrew = this->currentHomebrew - 1;
+			this->cursorSound->play();
+		}
+	}
+
+	this->cursor->setPosition(this->currentHomebrew);
 }
