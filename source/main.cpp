@@ -128,7 +128,7 @@ int main()
 
 			touchPosition mouse;
 
-			hidTouchRead(&mouse)
+			hidTouchRead(&mouse);
 
 			flask->touchPressed(mouse.px, mouse.py);
 
