@@ -154,3 +154,8 @@ void Flask::keyPressed(u32 key)
 
 	this->cursor->setPosition(this->currentHomebrew);
 }
+
+void Flask::touchPressed(int x, int y)
+{
+	
+}

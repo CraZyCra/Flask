@@ -91,3 +91,17 @@ void pop()
 		isPushed = false;
 	}
 }
+
+void setScissor(u32 x, u32 y, u32 width, u32 height)
+{
+	if (sf2d_get_current_screen() == getCurrentScreen()) 
+	{
+		GPU_SCISSORMODE mode = GPU_SCISSOR_NORMAL;
+
+		if (!x && !y && !width && !height) {
+			mode = GPU_SCISSOR_DISABLE;
+		}
+
+		sf2d_set_scissor_test(mode, x, y, width, height);
+	}
+}

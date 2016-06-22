@@ -6,6 +6,7 @@ class Flask
 		void update(float dt);
 		void render();
 		void keyPressed(u32 key);
+		void touchPressed(int x, int y);
 		Flask();
 		~Flask();
 

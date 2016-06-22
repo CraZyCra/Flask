@@ -19,3 +19,7 @@ void translate(float x, float y);
 void push();
 
 void pop();
+
+void setScissor(u32 x, u32 y, u32 width, u32 height);
+
+void setScissor();

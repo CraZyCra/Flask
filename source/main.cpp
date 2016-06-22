@@ -126,6 +126,12 @@ int main()
 			
 			flask->keyPressed(hidKeysDown());
 
+			touchPosition mouse;
+
+			hidTouchRead(&mouse)
+
+			flask->touchPressed(mouse.px, mouse.py);
+
 			flask->update(deltaStep()); //wee
 
 			//Start top screen
