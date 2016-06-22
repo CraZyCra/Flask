@@ -22,11 +22,11 @@ void Application::setIcon(Image * icon)
 	this->icon = icon;
 }
 
-void Application::render()
+void Application::render(float translateValue)
 {
-	this->icon->render((*icons)[this->quadID], this->x, this->y);
+	this->icon->render((*icons)[this->quadID], this->x, floor(this->y - translateValue));
 
-	nameFont->print(this->name, this->x + 52, this->y + 4);
+	nameFont->print(this->name, this->x + 52, floor((this->y + 4) - translateValue));
 
-	authorFont->print(this->author, this->x + 52, this->y + 24);
+	authorFont->print(this->author, this->x + 52, floor((this->y + 24) - translateValue));
 }

@@ -5,7 +5,7 @@ class Application
 	public:
 		Application(float x, float y, const char * name, const char * author, const char * description, int quadID);
 		void setIcon(Image * icon);
-		void render();
+		void render(float translateValue);
 		void setDownloadURL(const char * url);
 
 	private:

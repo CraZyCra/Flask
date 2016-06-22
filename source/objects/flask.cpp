@@ -29,6 +29,7 @@ Flask::Flask()
 	this->searchDisplay = new Image(this->searchTexture);
 
 	this->cursorSound = new OggVorbis("audio/cursor.ogg");
+	this->cursorSound->setVolume(0.35);
 
 	this->cursor = new Cursor();
 
@@ -65,11 +66,11 @@ void Flask::update(float dt)
 
 	if (this->currentHomebrew < applications->size() - 2)
 	{
-		smoothScroll = smoothScroll + ((this->currentHomebrew * 64) - this->smoothScroll) * SCROLLRATE * dt;
+		this->smoothScroll = this->smoothScroll + ((this->currentHomebrew * 64) - this->smoothScroll) * SCROLLRATE * dt;
 	}
 	else
 	{
-		smoothScroll = smoothScroll + (((applications->size() - 3) * 64) - this->smoothScroll) * SCROLLRATE * dt;
+		this->smoothScroll = this->smoothScroll + (((applications->size() - 3) * 64) - this->smoothScroll) * SCROLLRATE * dt;
 	}
 }
 
@@ -99,24 +100,18 @@ void Flask::render()
 
 	setScreen(GFX_BOTTOM);
 
-	this->cursor->render();
+	this->cursor->render(this->smoothScroll);
 
 	setColor(255, 255, 255);
 
-	push();
-
-	translate(0, -this->smoothScroll);
-
 	for (int i = 0; i < applications->size(); i++)
-	{	
+	{
 		setScissor(24, 24, 272, 192);
 		
-		(*applications)[i].render();
+		(*applications)[i].render(this->smoothScroll);
 
 		setScissor(NULL, NULL, NULL, NULL);
 	}
-
-	pop();
 
 	setColor(255, 255, 255);
 	this->listDisplay->render(320 * 1/4 - 8, 220);

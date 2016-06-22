@@ -12,9 +12,9 @@ int getCurrentScreen();
 
 void screenShot();
 
-void translateCoords(int * x, int * y);
+void translateCoords(float * x, float * y);
 
-void translate(int x, int y);
+void translate(float x, float y);
 
 void push();
 

@@ -44,8 +44,8 @@ extern int currentScreen;
 #include "include/quad.h"
 #include "include/image.h"
 #include "include/font.h"
-#include "include/cursor.h"
 
+#include "include/cursor.h"
 #include "include/bubble.h"
 #include "include/flask.h"
 #include "include/application.h"
