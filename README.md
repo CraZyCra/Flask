@@ -6,7 +6,7 @@ They will also have the ability to donate in various ways to the authors as an o
 
 
 <p align="center">
-    <img src="http://i.imgur.com/ShuB6XQ.png"></img>
+    <img src="http://i.imgur.com/X5jHlez.png"></img>
 </p>
 
 # Building 
