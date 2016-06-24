@@ -3,21 +3,22 @@
 class Application
 {
 	public:
-		Application(float x, float y, const char * name, const char * author, const char * description, int quadID);
+		Application(float x, float y);
 		void setIcon(Image * icon);
 		void render(float translateValue);
 		void setDownloadURL(const char * url);
+		void setName(const char * name);
+		void setAuthor(const char * author);
+		void setDescription(const char * description);
 
 	private:
 		float x;
 		float y;
 		
-		const char * name;
-		const char * author;
-		const char * description;
-		const char * downloadURL;
-
-		int quadID;
+		char * name;
+		char * author;
+		char * description;
+		char * downloadURL;
 
 		Image * icon;
 

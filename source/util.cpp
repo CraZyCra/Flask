@@ -1,4 +1,5 @@
 #include "shared.h"
+#include <jansson.h>
 
 std::vector<char *> split(char * string, char * delim)
 {
@@ -40,6 +41,12 @@ void downloadFile(char * url, char * filename)
 
 	httpcGetDownloadSizeState(&httpContext, NULL, &size);
 
+	/*if (size == fsize("sdmc:/flask/flask.json"))
+	{
+		httpcCloseContext(&httpContext);
+		return;
+	}*/
+
 	buffer = (u8 *)malloc(size);
 
 	if (buffer == NULL) displayError("Could not malloc httpc buffer");
@@ -48,7 +55,6 @@ void downloadFile(char * url, char * filename)
 
 	httpcDownloadData(&httpContext, buffer, size, NULL);
 
-	printf("Making filepath\n");
 	char * sdmcPath = "sdmc:/flask/";
 
 	char * fullpath = (char *)malloc(strlen(sdmcPath) + strlen(filename) + 1);
@@ -72,50 +78,64 @@ void downloadFile(char * url, char * filename)
 
 void cacheData()
 {
-	printf("Downloading homebrew.txt\n");
-	downloadFile("https://raw.githubusercontent.com/TurtleP/Flask/master/homebrew.txt", "homebrew.txt");
+	downloadFile("https://3ds.intherack.com/flask/list", "flask.json");
 
-	printf("Downloading icons.png\n");
-	downloadFile("https://raw.githubusercontent.com/TurtleP/Flask/master/icons.png", "icons.png");
-
-	sf2d_texture * texture = sfil_load_PNG_file("sdmc:/flask/icons.png", SF2D_PLACE_RAM);
-
-	for (int i = 1; i < 10; i++)
-	{
-		Quad temp((i - 1) * 48, 0, 48, 48);
-		icons->push_back(temp);
-	}
-
-    FILE * applicationFile = fopen("sdmc:/flask/homebrew.txt", "rb");
- 
-    long fileSize;
- 
-    fseek(applicationFile, 0, SEEK_END);
- 
-    fileSize = ftell(applicationFile);
-     
-    rewind(applicationFile);
- 
-    char * game = (char *)malloc(fileSize + 1);
- 
-    fread(game, fileSize, 1, applicationFile);
- 
-    fclose(applicationFile);
- 
-    std::vector<char *> newLines = split(game, "\n");
-     
-    std::vector<char *> data;
+    json_t * flaskJson = json_load_file("sdmc:/flask/flask.json", JSON_DECODE_ANY, NULL);
  	
-    for (int i = 0; i < newLines.size(); i++) //1: Name, 2: Author, 3: Description, 4: Download URL, 5: Icon ID
-    {
-        data = split(newLines[i], ";");
- 
-        Application temp(24, 24 + (i * 64), data[0], data[1], data[2], i);
-        temp.setDownloadURL(data[3]);
+ 	size_t arrayIndex;
+	json_t * arrayValue;
 
-        Image * tempIcon = new Image(texture);
-        temp.setIcon(tempIcon);
- 
-        applications->push_back(temp);
-    }
+	const char * objectKey;
+	json_t * objectValue;
+
+	json_array_foreach(flaskJson, arrayIndex, arrayValue) {
+	    json_t * jsonObject = json_array_get(flaskJson, arrayIndex);
+
+	    json_object_foreach(jsonObject, objectKey, objectValue) {
+	  		Application temp(24, 24 + (arrayIndex * 64));
+
+	  		if (strcmp(objectKey, "name") == 0)
+	  		{
+	  			temp.setName(json_string_value(objectValue));
+	  		}
+	  		else if (strcmp(objectKey, "author") == 0)
+	  		{
+	  			temp.setAuthor(json_string_value(objectValue));	
+	  		}
+	  		else if (strcmp(objectKey, "description") == 0)
+	  		{
+	  			temp.setDescription(json_string_value(objectValue));
+	  		}
+	  		else if (strcmp(objectKey, "url") == 0)
+	  		{
+	  			temp.setDownloadURL(json_string_value(objectValue));
+	  		}
+
+	  		//because we're not doing icons yet with cia stuff. .
+	  		sf2d_texture * noneImage = sfil_load_PNG_file("graphics/none.png", SF2D_PLACE_RAM);
+	  		Image * noneIcon = new Image(noneImage);
+
+	  		temp.setIcon(noneIcon);
+
+	  		applications->push_back(temp);
+		}
+	}
+}
+
+int fsize(const char * file)
+{
+	struct stat st;
+
+  	stat(file, &st);
+  
+  	return st.st_size;
+}
+
+void strstor(char * destination, const char * source)
+{
+	if (destination) free(destination);
+
+	destination = (char *)malloc(strlen(source) + 1);
+
+	strcpy(destination, source);
 }

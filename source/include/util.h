@@ -6,4 +6,6 @@ void downloadFile(char * url, char * filename);
 
 void loadBackgroundSong(void * arg);
 
-long fsize(const char * file);
+int fsize(const char * file);
+
+void strstor(char * destination, const char * source);

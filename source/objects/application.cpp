@@ -1,20 +1,41 @@
 #include "shared.h"
 
-Application::Application(float x, float y, const char * name, const char * author, const char * description, int quadID)
+Application::Application(float x, float y)
 {
 	this->x = x;
 	this->y = y;
 
-	this->name = name;
-	this->author = author;
-	this->description = description;
+	this->name = "";
+	this->author = "";
+	this->description = "";
+}
 
-	this->quadID = quadID;
+void Application::setName(const char * name)
+{
+	if (this->name) free(this->name);
+
+	this->name = (char *)malloc(strlen(name) + 1);
+
+	strcpy(this->name, name);
+}
+
+void Application::setAuthor(const char * author)
+{
+	if (this->author) free(this->author);
+
+	this->author = (char *)malloc(strlen(author) + 1);
+
+	strcpy(this->author, author);
+}
+
+void Application::setDescription(const char * description)
+{
+	//strstor(this->description, description);
 }
 
 void Application::setDownloadURL(const char * url)
 {
-	this->downloadURL = url;
+	//strstor(this->downloadURL, url);
 }
 
 void Application::setIcon(Image * icon)
@@ -24,7 +45,7 @@ void Application::setIcon(Image * icon)
 
 void Application::render(float translateValue)
 {
-	this->icon->render((*icons)[this->quadID], this->x, floor(this->y - translateValue));
+	this->icon->render(this->x, floor(this->y - translateValue));
 
 	nameFont->print(this->name, this->x + 52, floor((this->y + 4) - translateValue));
 

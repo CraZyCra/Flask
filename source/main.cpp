@@ -29,7 +29,6 @@ bool channelList[24];
 bool hasError = false;
 bool forceQuit = false;
 bool audioEnabled = false;
-bool loadSong = false;
 
 bool consoleEnabled = false;
 
