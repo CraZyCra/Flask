@@ -24,7 +24,7 @@ void Cursor::render(float translateValue)
 	{
 		setColor(41, 105, 176, 160 * this->sineValue);
 
-		sf2d_draw_rectangle(this->x, floor(this->y - translateValue), this->width, this->height, getCurrentColor());
+		sf2d_draw_rectangle(this->x, ceil(this->y - translateValue), this->width, this->height, getCurrentColor());
 
 		setColor(255, 255, 255, 255);
 	}

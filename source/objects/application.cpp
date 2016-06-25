@@ -35,7 +35,11 @@ void Application::setDescription(const char * description)
 
 void Application::setDownloadURL(const char * url)
 {
-	//strstor(this->downloadURL, url);
+	if (this->downloadURL) free(this->downloadURL);
+
+	this->downloadURL = (char *)malloc(strlen(url) + 1);
+
+	strcpy(this->downloadURL, url);
 }
 
 void Application::setIcon(Image * icon)
@@ -45,9 +49,9 @@ void Application::setIcon(Image * icon)
 
 void Application::render(float translateValue)
 {
-	this->icon->render(this->x, floor(this->y - translateValue));
+	this->icon->render(this->x, ceil(this->y - translateValue));
 
-	nameFont->print(this->name, this->x + 52, floor((this->y + 4) - translateValue));
+	nameFont->print(this->name, this->x + 52, ceil((this->y + 4) - translateValue));
 
-	authorFont->print(this->author, this->x + 52, floor((this->y + 24) - translateValue));
+	authorFont->print(this->author, this->x + 52, ceil((this->y + 24) - translateValue));
 }

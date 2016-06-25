@@ -29,17 +29,25 @@ void downloadFile(char * url, char * filename)
 
 	u32 size;
 
-	httpcOpenContext(&httpContext, HTTPC_METHOD_GET, url, 1);
+	returnResult = httpcOpenContext(&httpContext, HTTPC_METHOD_GET, url, 1);
 	
-	httpcSetSSLOpt(&httpContext, SSLCOPT_DisableVerify);
+	if (returnResult != 0) displayError("Failed to request url.");
 
-	httpcBeginRequest(&httpContext);
+	returnResult = httpcSetSSLOpt(&httpContext, SSLCOPT_DisableVerify);
 
-	httpcGetResponseStatusCode(&httpContext, &statusCode, 0);
+	if (returnResult != 0) displayError("Failed to Disable SSL Verification.");
+
+	returnResult = httpcBeginRequest(&httpContext);
+
+	if (returnResult != 0) displayError("Failed to begin http:C request");
+
+	returnResult = httpcGetResponseStatusCode(&httpContext, &statusCode, 0);
 
 	if (statusCode != 200) displayError("Invalid status code");
 
-	httpcGetDownloadSizeState(&httpContext, NULL, &size);
+	returnResult = httpcGetDownloadSizeState(&httpContext, NULL, &size);
+
+	if (returnResult != 0) displayError("Failed to get download size of file.");
 
 	/*if (size == fsize("sdmc:/flask/flask.json"))
 	{
@@ -49,11 +57,13 @@ void downloadFile(char * url, char * filename)
 
 	buffer = (u8 *)malloc(size);
 
-	if (buffer == NULL) displayError("Could not malloc httpc buffer");
+	if (buffer == NULL) displayError("Could not malloc httpc buffer.");
 
 	memset(buffer, 0, size);
 
-	httpcDownloadData(&httpContext, buffer, size, NULL);
+	returnResult = httpcDownloadData(&httpContext, buffer, size, NULL);
+
+	if (returnResult != 0) displayError("Failed to download file.");
 
 	char * sdmcPath = "sdmc:/flask/";
 
