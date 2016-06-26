@@ -29,6 +29,10 @@ void downloadFile(char * url, char * filename)
 
 	u32 size;
 
+	u32 bufferSize = 1024;
+
+	Result downloadStatus = HTTPC_RESULTCODE_DOWNLOADPENDING;
+
 	returnResult = httpcOpenContext(&httpContext, HTTPC_METHOD_GET, url, 1);
 	
 	if (returnResult != 0) displayError("Failed to request url.");
@@ -49,21 +53,9 @@ void downloadFile(char * url, char * filename)
 
 	if (returnResult != 0) displayError("Failed to get download size of file.");
 
-	/*if (size == fsize("sdmc:/flask/flask.json"))
-	{
-		httpcCloseContext(&httpContext);
-		return;
-	}*/
-
 	buffer = (u8 *)malloc(size);
 
 	if (buffer == NULL) displayError("Could not malloc httpc buffer.");
-
-	memset(buffer, 0, size);
-
-	returnResult = httpcDownloadData(&httpContext, buffer, size, NULL);
-
-	if (returnResult != 0) displayError("Failed to download file.");
 
 	char * sdmcPath = "sdmc:/flask/";
 
@@ -73,9 +65,16 @@ void downloadFile(char * url, char * filename)
 
 	strcat(fullpath, filename);
 
-	FILE * downloadedFile = fopen(fullpath, "w");
+	FILE * downloadedFile = fopen(fullpath, "w+");
 
-	fwrite(buffer, size, 1, downloadedFile);
+	while (downloadStatus == (s32)HTTPC_RESULTCODE_DOWNLOADPENDING)
+	{
+		memset(buffer, 0, bufferSize);
+
+		downloadStatus = httpcDownloadData(&httpContext, buffer, bufferSize, NULL);
+
+		fwrite(buffer, bufferSize, 1, downloadedFile);
+	}
 
 	fflush(downloadedFile);
 
