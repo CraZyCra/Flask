@@ -47,9 +47,9 @@ void downloadFile(char * url, char * filename)
 
 	if (statusCode != 200) displayError("Invalid status code");
 
-	returnResult = httpcGetDownloadSizeState(&httpContext, NULL, &size);
+	// returnResult = httpcGetDownloadSizeState(&httpContext, NULL, &size);
 
-	if (returnResult != 0) displayError("Failed to get download size of file.");
+	// if (returnResult != 0) displayError("Failed to get download size of file.");
 
 	buffer = (u8 *)malloc(bufferSize);
 
@@ -66,9 +66,9 @@ void downloadFile(char * url, char * filename)
 	FILE * downloadedFile = fopen(fullpath, "w+");
 
 	do {
-		returnResult = httpcDownloadData(&httpContext, buffer, bufferSize, NULL);
+		returnResult = httpcDownloadData(&httpContext, buffer, bufferSize, &size);
 
-		fwrite(buffer, bufferSize, 1, downloadedFile);
+		fwrite(buffer, 1, size, downloadedFile);
 
 	} while (returnResult == (s32)HTTPC_RESULTCODE_DOWNLOADPENDING);
 

@@ -1,3 +1,16 @@
+# Compiled files that don't belong in the repo
+Flask-stripped.elf
+Flask.3ds
+Flask.3dsx
+Flask.bin
+Flask.cia
+Flask.elf
+Flask.smdh
+banner.bin
+build/
+icon.bin
+
+
 # Windows image file caches
 Thumbs.db
 ehthumbs.db
