@@ -31,8 +31,6 @@ void downloadFile(char * url, char * filename)
 
 	u32 bufferSize = 1024;
 
-	Result downloadStatus = HTTPC_RESULTCODE_DOWNLOADPENDING;
-
 	returnResult = httpcOpenContext(&httpContext, HTTPC_METHOD_GET, url, 1);
 	
 	if (returnResult != 0) displayError("Failed to request url.");
@@ -49,11 +47,11 @@ void downloadFile(char * url, char * filename)
 
 	if (statusCode != 200) displayError("Invalid status code");
 
-	returnResult = httpcGetDownloadSizeState(&httpContext, NULL, &size);
+	// returnResult = httpcGetDownloadSizeState(&httpContext, NULL, &size);
 
-	if (returnResult != 0) displayError("Failed to get download size of file.");
+	// if (returnResult != 0) displayError("Failed to get download size of file.");
 
-	buffer = (u8 *)malloc(size);
+	buffer = (u8 *)malloc(bufferSize);
 
 	if (buffer == NULL) displayError("Could not malloc httpc buffer.");
 
@@ -67,20 +65,23 @@ void downloadFile(char * url, char * filename)
 
 	FILE * downloadedFile = fopen(fullpath, "w+");
 
-	while (downloadStatus == (s32)HTTPC_RESULTCODE_DOWNLOADPENDING)
-	{
-		memset(buffer, 0, bufferSize);
+	do {
+		returnResult = httpcDownloadData(&httpContext, buffer, bufferSize, &size);
 
-		downloadStatus = httpcDownloadData(&httpContext, buffer, bufferSize, NULL);
+		fwrite(buffer, 1, size, downloadedFile);
 
-		fwrite(buffer, bufferSize, 1, downloadedFile);
-	}
+	} while (returnResult == (s32)HTTPC_RESULTCODE_DOWNLOADPENDING);
+
+
+	if (returnResult != 0) displayError("Downloading file failed somehow");
 
 	fflush(downloadedFile);
 
 	fclose(downloadedFile);
 
 	httpcCloseContext(&httpContext);
+	
+	free(buffer);
 
 	free(fullpath);
 }
