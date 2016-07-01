@@ -24,6 +24,12 @@ Intro::Intro()
 	cacheData();
 }
 
+Intro::~Intro()
+{
+	delete this->banner;
+	delete this->loader;
+}
+
 void Intro::update(float dt)
 {
 	this->loadRotation += 4 * dt;
