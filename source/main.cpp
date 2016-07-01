@@ -42,6 +42,13 @@ Font * authorFont;
 
 std::vector<Application> * applications;
 std::vector<Quad> * icons;
+std::vector<Bubble> * bubbles;
+
+Intro * flaskIntro;
+Flask * flaskMain;
+
+int currentScene;
+char * flaskVersion = "v0.1";
 
 float deltaStep()
 {
@@ -56,6 +63,25 @@ float deltaStep()
 	if (dt < 0) dt = 0; // Fix nasty timer bug
 
 	return dt;
+}
+
+Scene * getScene()
+{
+	switch(currentScene)
+	{
+		case SC_INTRO:
+			return flaskIntro;
+		case SC_FLASK:
+			return flaskMain;
+		default:
+			displayError("Invalid scene.");
+			break;
+	}
+}
+
+void setScene(int scene)
+{
+	currentScene = scene;
 }
 
 void displayError(const char * error)
@@ -101,21 +127,18 @@ int main()
 
 	deltaStep();
 
-	OggVorbis * backgroundMusic = new OggVorbis("audio/bgm.ogg");
-	backgroundMusic->setLooping(true);
-	backgroundMusic->setVolume(0.35);
-	backgroundMusic->play();
-
 	nameFont = new Font("fonts/LiberationSans-Bold.ttf", 16);
 	descriptionFont = new Font("fonts/LiberationSans-Regular.ttf", 16);
 	authorFont = new Font("fonts/LiberationSans-Italic.ttf", 16);
 
 	applications = new std::vector<Application>();
 	icons = new std::vector<Quad>();
+	bubbles = new std::vector<Bubble>();
 
-	cacheData();
+	flaskIntro = new Intro();
+	flaskMain = new Flask();
 
-	Flask * flask = new Flask();
+	setScene(SC_INTRO);
 
 	while (aptMainLoop())
 	{
@@ -123,20 +146,20 @@ int main()
 		{
 			hidScanInput();
 			
-			flask->keyPressed(hidKeysDown());
+			getScene()->keyPressed(hidKeysDown());
 
 			touchPosition mouse;
 
 			hidTouchRead(&mouse);
 
-			flask->touchPressed(mouse.px, mouse.py);
+			getScene()->touchPressed(mouse.px, mouse.py);
 
-			flask->update(deltaStep()); //wee
+			getScene()->update(deltaStep()); //wee
 
 			//Start top screen
 			sf2d_start_frame(GFX_TOP, GFX_LEFT);
 
-			flask->render();
+			getScene()->render();
 			
 			sf2d_end_frame();
 		
@@ -145,7 +168,7 @@ int main()
 			{
 				sf2d_start_frame(GFX_BOTTOM, GFX_LEFT);
 
-				flask->render();
+				getScene()->render();
 
 				sf2d_end_frame();
 			}
@@ -178,6 +201,10 @@ int main()
 	if (romfsEnabled) romfsExit();
 
 	if (audioEnabled) ndspExit();
+
+	delete flaskIntro;
+
+	delete flaskMain;
 
 	return 0;
 }

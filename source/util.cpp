@@ -39,6 +39,13 @@ void downloadFile(char * url, char * filename)
 
 	if (returnResult != 0) displayError("Failed to Disable SSL Verification.");
 
+	char httpHeaderField[20];
+
+	strcpy(httpHeaderField, "Flask/");
+	strcat(httpHeaderField, flaskVersion);
+
+	httpcAddRequestHeaderField(&httpContext, (char *)"User-Agent", httpHeaderField); 
+
 	returnResult = httpcBeginRequest(&httpContext);
 
 	if (returnResult != 0) displayError("Failed to begin http:C request");
@@ -46,10 +53,6 @@ void downloadFile(char * url, char * filename)
 	returnResult = httpcGetResponseStatusCode(&httpContext, &statusCode, 0);
 
 	if (statusCode != 200) displayError("Invalid status code");
-
-	// returnResult = httpcGetDownloadSizeState(&httpContext, NULL, &size);
-
-	// if (returnResult != 0) displayError("Failed to get download size of file.");
 
 	buffer = (u8 *)malloc(bufferSize);
 
@@ -65,7 +68,13 @@ void downloadFile(char * url, char * filename)
 
 	FILE * downloadedFile = fopen(fullpath, "w+");
 
+	if (downloadedFile != NULL)
+	{
+		remove(fullpath);
+	}
+
 	do {
+		
 		returnResult = httpcDownloadData(&httpContext, buffer, bufferSize, &size);
 
 		fwrite(buffer, 1, size, downloadedFile);
@@ -86,9 +95,18 @@ void downloadFile(char * url, char * filename)
 	free(fullpath);
 }
 
+Image * generateApplicationIcon(void) //temporary thing
+{
+	sf2d_texture * noneImage = sfil_load_PNG_file("graphics/none.png", SF2D_PLACE_RAM);
+
+	Image * applicationIcon = new Image(noneImage);
+
+	return applicationIcon;
+}
+
 void cacheData()
 {
-	downloadFile("https://3ds.intherack.com/flask/list", "flask.json");
+	downloadFile("https://api.titledb.com/v1/", "flask.json");
 
     json_t * flaskJson = json_load_file("sdmc:/flask/flask.json", JSON_DECODE_ANY, NULL);
  	
@@ -122,14 +140,13 @@ void cacheData()
 	  		}
 
 	  		//because we're not doing icons yet with cia stuff. .
-	  		sf2d_texture * noneImage = sfil_load_PNG_file("graphics/none.png", SF2D_PLACE_RAM);
-	  		Image * noneIcon = new Image(noneImage);
-
-	  		temp.setIcon(noneIcon);
+	  		temp.setIcon(generateApplicationIcon());
 
 	  		applications->push_back(temp);
 		}
 	}
+
+	setScene(SC_FLASK);
 }
 
 int fsize(const char * file)
@@ -143,9 +160,15 @@ int fsize(const char * file)
 
 void strstor(char * destination, const char * source)
 {
-	if (destination) free(destination);
-
 	destination = (char *)malloc(strlen(source) + 1);
 
 	strcpy(destination, source);
+}
+
+void loadBackgroundSong(void * arg)
+{
+	OggVorbis * backgroundMusic = new OggVorbis("audio/bgm.ogg");
+	backgroundMusic->setLooping(true);
+	backgroundMusic->setVolume(0.35);
+	backgroundMusic->play();
 }

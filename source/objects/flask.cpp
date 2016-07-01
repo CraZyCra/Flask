@@ -2,14 +2,11 @@
 
 Flask::Flask()
 {
-	this->bubbleTexture = sfil_load_PNG_file("graphics/bubble.png", SF2D_PLACE_RAM);
-	this->wifiTexture = sfil_load_PNG_file("graphics/wifi.png", SF2D_PLACE_RAM);
-	this->batteryTexture = sfil_load_PNG_file("graphics/battery.png", SF2D_PLACE_RAM);
-	this->listTexture = sfil_load_PNG_file("graphics/list.png", SF2D_PLACE_RAM);
-	this->updateTexture = sfil_load_PNG_file("graphics/updates.png", SF2D_PLACE_RAM);
-	this->searchTexture = sfil_load_PNG_file("graphics/search.png", SF2D_PLACE_RAM);
-
-	this->bubbles = new std::vector<Bubble>();
+	sf2d_texture * wifiTexture = sfil_load_PNG_file("graphics/wifi.png", SF2D_PLACE_RAM);
+	sf2d_texture * batteryTexture = sfil_load_PNG_file("graphics/battery.png", SF2D_PLACE_RAM);
+	sf2d_texture * listTexture = sfil_load_PNG_file("graphics/list.png", SF2D_PLACE_RAM);
+	sf2d_texture * updateTexture = sfil_load_PNG_file("graphics/updates.png", SF2D_PLACE_RAM);
+	sf2d_texture * searchTexture = sfil_load_PNG_file("graphics/search.png", SF2D_PLACE_RAM);
 
 	this->batteryQuads = new std::vector<Quad>();
 
@@ -21,12 +18,12 @@ Flask::Flask()
 
 	this->bubbleTimer = rand() % 2 + 1;
 
-	this->wifiSignal = new Image(this->wifiTexture);
-	this->batteryDisplay = new Image(this->batteryTexture);
+	this->wifiSignal = new Image(wifiTexture);
+	this->batteryDisplay = new Image(batteryTexture);
 	
-	this->listDisplay = new Image(this->listTexture);
-	this->updateDisplay = new Image(this->updateTexture);
-	this->searchDisplay = new Image(this->searchTexture);
+	this->listDisplay = new Image(listTexture);
+	this->updateDisplay = new Image(updateTexture);
+	this->searchDisplay = new Image(searchTexture);
 
 	this->cursorSound = new OggVorbis("audio/cursor.ogg");
 	this->cursorSound->setVolume(0.35);
@@ -35,30 +32,18 @@ Flask::Flask()
 
 	this->currentHomebrew = 0;
 	this->smoothScroll = 0;
+
+	this->state = "list";
 }
 
 void Flask::update(float dt)
 {
-	for (int i = 0; i < (*this->bubbles).size(); i++)
+	for (int i = 0; i < bubbles->size(); i++)
 	{
-		(*this->bubbles)[i].update(dt);
-		if ((*this->bubbles)[i].shouldRemove() == true)
+		(*bubbles)[i].update(dt);
+		if ((*bubbles)[i].shouldRemove() == true)
 		{
-			(*this->bubbles)[i].resetBubble();
-		}
-	}
-
-	if ((*this->bubbles).size() < 30)
-	{
-		if (this->bubbleTimer > 0)
-		{
-			this->bubbleTimer -= dt;
-		}
-		else
-		{	
-			Bubble temp(this->bubbleTexture);
-			this->bubbles->push_back(temp);
-			this->bubbleTimer = rand() % 2 + 1;
+			(*bubbles)[i].resetBubble();
 		}
 	}
 
@@ -76,11 +61,11 @@ void Flask::update(float dt)
 
 void Flask::render()
 {	
-	for (int i = 0; i < (*this->bubbles).size(); i++)
+	for (int i = 0; i < (*bubbles).size(); i++)
 	{
-		if ((*this->bubbles)[i].getZOrder() == 0)
+		if ((*bubbles)[i].getZOrder() == 0)
 		{
-			(*this->bubbles)[i].render();
+			(*bubbles)[i].render();
 		}
 	}
 
@@ -124,11 +109,11 @@ void Flask::render()
 
 	setColor(255, 255, 255);
 
-	for (int i = 0; i < (*this->bubbles).size(); i++)
+	for (int i = 0; i < (*bubbles).size(); i++)
 	{
-		if ((*this->bubbles)[i].getZOrder() == 1)
+		if ((*bubbles)[i].getZOrder() == 1)
 		{
-			(*this->bubbles)[i].render();
+			(*bubbles)[i].render();
 		}
 	}
 }

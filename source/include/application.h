@@ -21,6 +21,7 @@ class Application
 		char * downloadURL;
 
 		Image * icon;
+		Image * downloadIcon;
 
 		size_t size;
 };

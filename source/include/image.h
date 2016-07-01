@@ -6,6 +6,7 @@ class Image
 		Image(sf2d_texture * texture);
 		void render(float x, float y);
 		void render(Quad quad, float x, float y);
+		void render(float x, float y, float rotation);
 		int getWidth();
 		int getHeight();
 		

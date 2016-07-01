@@ -35,6 +35,7 @@ extern bool romfsEnabled;
 extern float delta;
 extern bool channelList[24];
 extern int currentScreen;
+extern char * flaskVersion;
 
 #define SCROLLRATE 4
 
@@ -45,10 +46,19 @@ extern int currentScreen;
 #include "include/image.h"
 #include "include/font.h"
 
+
 #include "include/cursor.h"
 #include "include/bubble.h"
+#include "include/scene.h"
 #include "include/flask.h"
 #include "include/application.h"
+#include "include/intro.h"
+
+enum SCENES
+{
+	SC_INTRO = 0,
+	SC_FLASK = 1
+};
 
 //Util
 #include "include/util.h"
@@ -59,8 +69,4 @@ extern Font * authorFont;
 
 extern std::vector<Quad> * icons;
 extern std::vector<Application> * applications;
-
-#define SAMPLERATE 44100
-#define SAMPLESPERBUFFER (SAMPLERATE / 30)
-#define BYTESPERSAMPLE 4
-#define IFNULL(x, y) (x) ? (x) : (y)
+extern std::vector<Bubble> * bubbles;

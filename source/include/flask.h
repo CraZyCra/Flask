@@ -1,25 +1,19 @@
 #pragma once
 
-class Flask
+class Flask : public Scene
 {
 	public:
-		void update(float dt);
-		void render();
-		void keyPressed(u32 key);
-		void touchPressed(int x, int y);
+		void update(float dt) override;
+		void render() override;
+		void keyPressed(u32 key) override;
+		void touchPressed(int x, int y) override;
 		Flask();
-		~Flask();
 
 	private:
 		std::vector<Bubble> * bubbles;
 
 		sf2d_texture * bubbleTexture;
-		sf2d_texture * wifiTexture;
-		sf2d_texture * batteryTexture;
-		sf2d_texture * listTexture;
-		sf2d_texture * updateTexture;
-		sf2d_texture * searchTexture;
-
+		
 		Image * wifiSignal;
 		Image * batteryDisplay;
 		Image * listDisplay;
@@ -30,6 +24,8 @@ class Flask
 		
 		float bubbleTimer;
 		std::vector<Quad> * batteryQuads;
+
+		char * state;
 
 		Cursor * cursor;
 
