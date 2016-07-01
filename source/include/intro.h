@@ -4,6 +4,7 @@ class Intro : public Scene
 {
 	public:
 		Intro();
+		~Intro();
 		void render() override;
 		void update(float dt) override;
 		void keyPressed(u32 key) override;
