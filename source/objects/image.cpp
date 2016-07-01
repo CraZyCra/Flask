@@ -5,6 +5,11 @@ Image::Image(sf2d_texture * texture)
 	this->texture = texture;
 }
 
+Image::~Image()
+{
+	sf2d_free_texture(this->texture);
+}
+
 int Image::getWidth()
 {
 	return this->texture->width;
