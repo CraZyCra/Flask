@@ -29,9 +29,9 @@ include $(DEVKITARM)/3ds_rules
 
 TARGET		:=	$(notdir $(CURDIR))
 BUILD		:=	build
-SOURCES		:=	source source/libs/json/src source/modules source/objects source/libs/tremor
+SOURCES		:=	source source/modules source/objects source/libs/tremor source/libs/7z
 DATA 		:= 	data
-INCLUDES	:=	source source/include source/libs/tremor source/libs/sf2dlib/include source/libs/sftdlib/include source/libs/sfillib/include source/libs/json/src
+INCLUDES	:=	source source/include source/libs/tremor source/libs/7z
 
 APP_TITLE	:=	Flask
 APP_AUTHOR	:=	TurtleP
@@ -60,19 +60,19 @@ CFLAGS	:=	-g -Wall -O2 -mword-relocations \
 
 CFLAGS	+=	$(INCLUDE) -DARM11 -D_3DS
 
-CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions -std=gnu++11
+CXXFLAGS	:= $(CFLAGS) -fno-rtti -fexceptions -std=gnu++14
 
 ASFLAGS	:=	-g $(ARCH)
 LDFLAGS	=	-specs=3dsx.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
 
-LIBS	:= -lsfil -lpng -ljpeg -lz -lsf2d -lctru -lm -lsftd -lfreetype -logg
+LIBS	:= -lpng -ljpeg -lz -lstarlight -lcitro3d -lctru -lm -logg
 
 UNAME := $(shell uname)
 #---------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level containing
 # include and lib
 #---------------------------------------------------------------------------------
-LIBDIRS	:= $(CTRULIB) $(PORTLIBS) $(CURDIR)/source/libs/libsf2d $(CURDIR)/source/libs/libsfil $(CURDIR)/source/libs/libsftd $(CURDIR)/source/libs/tremor $(CURDIR)/source/libs/json/src
+LIBDIRS	:= $(CTRULIB) $(PORTLIBS) $(DEVKITPRO)/libstarlight $(CURDIR)/source/libs/tremor $(CURDIR)/source/libs/7z
 
 
 #---------------------------------------------------------------------------------
@@ -145,46 +145,14 @@ $(BUILD):
 	@[ -d $@ ] || mkdir -p $@
 	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
 
-build-sf2dlib:
-	@make -C source/libs/libsf2d build
-
-build-sftdlib:
-	@make -C source/libs/libsftd build
-
-build-sfillib:
-	@make -C source/libs/libsfil build
-
 build-all:
-	@echo Building sf2dlib...
-	@make build-sf2dlib
-	@echo Building sftdlib...
-	@make build-sftdlib
-	@echo Building sfillib...
-	@make build-sfillib
-	@echo Building LovePotion...
 	@make build
 
 #---------------------------------------------------------------------------------
 clean:
 	@rm -fr $(BUILD) $(TARGET).3dsx $(OUTPUT).smdh $(OUTPUT).elf $(OUTPUT)-stripped.elf $(OUTPUT).bin $(OUTPUT).3ds $(OUTPUT).cia icon.bin banner.bin
 
-clean-sf2dlib:
-	@make -C source/libs/libsf2d clean
-
-clean-sftdlib:
-	@make -C source/libs/libsftd clean
-
-clean-sfillib:
-	@make -C source/libs/libsfil clean
-
 clean-all:
-	@echo Cleaning sf2dlib...
-	@make clean-sf2dlib
-	@echo Cleaning sftdlib...
-	@make clean-sftdlib
-	@echo Cleaning sfillib...
-	@make clean-sfillib
-	@echo Cleaning LovePotion...
 	@make clean
 
 #---------------------------------------------------------------------------------

@@ -1,5 +1,4 @@
 #include "shared.h"
-#include <jansson.h>
 
 std::vector<char *> split(char * string, char * delim)
 {
@@ -9,12 +8,51 @@ std::vector<char *> split(char * string, char * delim)
 
 	while (token != NULL)
 	{
-	    array.push_back(token);
+		array.push_back(token);
 
-	    token = strtok(NULL, delim);
+		token = strtok(NULL, delim);
 	}
 
 	return array;
+}
+
+int fsize(FILE * file)
+{
+	int size;
+	
+	int pos = ftell(file);
+
+	fseek(file, 0, SEEK_END);
+
+	size = ftell(file);
+
+	fseek(file, pos, SEEK_SET);
+
+	return size;
+}
+
+u8 * memsearch(u8 * startPos, const void * pattern, u32 size, u32 patternSize)
+{
+	const u8 *patternc = (const u8 *)pattern;
+	u32 table[256];
+
+	//Preprocessing
+	for(u32 i = 0; i < 256; i++)
+		table[i] = patternSize;
+	for(u32 i = 0; i < patternSize - 1; i++)
+		table[patternc[i]] = patternSize - i - 1;
+
+	//Searching
+	u32 j = 0;
+	while(j <= size - patternSize)
+	{
+		u8 c = startPos[j + patternSize - 1];
+		if(patternc[patternSize - 1] == c && memcmp(pattern, startPos + j, patternSize - 1) == 0)
+			return startPos + j;
+		j += table[c];
+	}
+
+	return NULL;
 }
 
 void downloadFile(char * url, char * filename)
@@ -50,7 +88,7 @@ void downloadFile(char * url, char * filename)
 
 	if (returnResult != 0) displayError("Failed to begin http:C request");
 
-	returnResult = httpcGetResponseStatusCode(&httpContext, &statusCode, 0);
+	returnResult = httpcGetResponseStatusCode(&httpContext, &statusCode);
 
 	if (statusCode != 200) displayError("Invalid status code");
 
@@ -95,80 +133,83 @@ void downloadFile(char * url, char * filename)
 	free(fullpath);
 }
 
-Image * generateApplicationIcon(void) //temporary thing
+#define IN_BUF_SIZE (1 << 16)
+#define OUT_BUF_SIZE (1 << 16)
+
+SRes Decode(ISeqOutStream *outStream, ISeqInStream *inStream)
 {
-	sf2d_texture * noneImage = sfil_load_PNG_file("graphics/none.png", SF2D_PLACE_RAM);
+  UInt64 unpackSize;
+  int i;
+  SRes res = 0;
 
-	Image * applicationIcon = new Image(noneImage);
+  CLzmaDec state;
 
-	return applicationIcon;
+  /* header: 5 bytes of LZMA properties and 8 bytes of uncompressed size */
+  unsigned char header[LZMA_PROPS_SIZE + 8];
+
+  /* Read and parse header */
+
+  RINOK(SeqInStream_Read(inStream, header, sizeof(header)));
+
+  unpackSize = 0;
+  for (i = 0; i < 8; i++)
+	unpackSize += (UInt64)header[LZMA_PROPS_SIZE + i] << (i * 8);
+
+  LzmaDec_Construct(&state);
+  RINOK(LzmaDec_Allocate(&state, header, LZMA_PROPS_SIZE, &g_Alloc));
+  res = Decode2(&state, outStream, inStream, unpackSize);
+  LzmaDec_Free(&state, &g_Alloc);
+  return res;
 }
 
-void cacheData()
+SRes Decode2(CLzmaDec *state, ISeqOutStream *outStream, ISeqInStream *inStream, UInt64 unpackSize)
 {
-	downloadFile("https://api.titledb.com/v1/", "flask.json");
-
-    json_t * flaskJson = json_load_file("sdmc:/flask/flask.json", JSON_DECODE_ANY, NULL);
- 	
- 	size_t arrayIndex;
-	json_t * arrayValue;
-
-	const char * objectKey;
-	json_t * objectValue;
-
-	json_array_foreach(flaskJson, arrayIndex, arrayValue) {
-	    json_t * jsonObject = json_array_get(flaskJson, arrayIndex);
-
-	    json_object_foreach(jsonObject, objectKey, objectValue) {
-	  		Application temp(24, 24 + (arrayIndex * 64));
-
-	  		if (strcmp(objectKey, "name") == 0)
-	  		{
-	  			temp.setName(json_string_value(objectValue));
-	  		}
-	  		else if (strcmp(objectKey, "author") == 0)
-	  		{
-	  			temp.setAuthor(json_string_value(objectValue));	
-	  		}
-	  		else if (strcmp(objectKey, "description") == 0)
-	  		{
-	  			temp.setDescription(json_string_value(objectValue));
-	  		}
-	  		else if (strcmp(objectKey, "url") == 0)
-	  		{
-	  			temp.setDownloadURL(json_string_value(objectValue));
-	  		}
-
-	  		//because we're not doing icons yet with cia stuff. .
-	  		temp.setIcon(generateApplicationIcon());
-
-	  		applications->push_back(temp);
-		}
+  int thereIsSize = (unpackSize != (UInt64)(Int64)-1);
+  Byte inBuf[IN_BUF_SIZE];
+  Byte outBuf[OUT_BUF_SIZE];
+  size_t inPos = 0, inSize = 0, outPos = 0;
+  LzmaDec_Init(state);
+  for (;;)
+  {
+	if (inPos == inSize)
+	{
+	  inSize = IN_BUF_SIZE;
+	  RINOK(inStream->Read(inStream, inBuf, &inSize));
+	  inPos = 0;
 	}
-
-	setScene(SC_FLASK);
-}
-
-int fsize(const char * file)
-{
-	struct stat st;
-
-  	stat(file, &st);
-  
-  	return st.st_size;
-}
-
-void strstor(char * destination, const char * source)
-{
-	destination = (char *)malloc(strlen(source) + 1);
-
-	strcpy(destination, source);
-}
-
-void loadBackgroundSong(void * arg)
-{
-	OggVorbis * backgroundMusic = new OggVorbis("audio/bgm.ogg");
-	backgroundMusic->setLooping(true);
-	backgroundMusic->setVolume(0.35);
-	backgroundMusic->play();
+	{
+	  SRes res;
+	  SizeT inProcessed = inSize - inPos;
+	  SizeT outProcessed = OUT_BUF_SIZE - outPos;
+	  ELzmaFinishMode finishMode = LZMA_FINISH_ANY;
+	  ELzmaStatus status;
+	  if (thereIsSize && outProcessed > unpackSize)
+	  {
+		outProcessed = (SizeT)unpackSize;
+		finishMode = LZMA_FINISH_END;
+	  }
+	  
+	  res = LzmaDec_DecodeToBuf(state, outBuf + outPos, &outProcessed,
+		inBuf + inPos, &inProcessed, finishMode, &status);
+	  inPos += inProcessed;
+	  outPos += outProcessed;
+	  unpackSize -= outProcessed;
+	  
+	  if (outStream)
+		if (outStream->Write(outStream, outBuf, outPos) != outPos)
+		  return SZ_ERROR_WRITE;
+		
+	  outPos = 0;
+	  
+	  if (res != SZ_OK || (thereIsSize && unpackSize == 0))
+		return res;
+	  
+	  if (inProcessed == 0 && outProcessed == 0)
+	  {
+		if (thereIsSize || status != LZMA_STATUS_FINISHED_WITH_MARK)
+		  return SZ_ERROR_DATA;
+		return res;
+	  }
+	}
+  }
 }

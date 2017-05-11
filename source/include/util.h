@@ -1,19 +1,20 @@
+#include "7z.h"
+#include "7zFile.h"
+#include "LzmaDec.h"
+#include "Alloc.h"
+
 float deltaStep();
 
 void cacheData();
 
 void downloadFile(char * url, char * filename);
 
-void loadBackgroundSong(void * arg);
-
-int fsize(const char * file);
+int fsize(FILE * file);
 
 void strstor(char * destination, const char * source);
 
-Image * generateApplicationIcon(void);
+u8 * memsearch(u8 * startPos, const void * pattern, u32 size, u32 patternSize);
 
-Scene * getScene(int scene);
+SRes Decode(ISeqOutStream *outStream, ISeqInStream *inStream);
 
-void generateBubbles(void * arg);
-
-void setScene(int scene);
+SRes Decode2(CLzmaDec *state, ISeqOutStream *outStream, ISeqInStream *inStream, UInt64 unpackSize);

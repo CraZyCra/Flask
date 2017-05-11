@@ -1,7 +1,4 @@
 //3DS and lib includes
-#include <sf2d.h>
-#include <sfil.h>
-#include <sftd.h>
 #include <3ds.h>
 
 //Standard libs
@@ -33,40 +30,10 @@
 extern void displayError(const char * error);
 extern bool romfsEnabled;
 extern float delta;
-extern bool channelList[24];
-extern int currentScreen;
 extern char * flaskVersion;
-
-#define SCROLLRATE 4
-
-//Class includes
-#include "include/oggvorbis.h"
-#include "include/graphics.h"
-#include "include/quad.h"
-#include "include/image.h"
-#include "include/font.h"
-
-
-#include "include/cursor.h"
-#include "include/bubble.h"
-#include "include/scene.h"
-#include "include/flask.h"
-#include "include/application.h"
-#include "include/intro.h"
-
-enum SCENES
-{
-	SC_INTRO = 0,
-	SC_FLASK = 1
-};
 
 //Util
 #include "include/util.h"
 
-extern Font * nameFont;
-extern Font * descriptionFont;
-extern Font * authorFont;
-
-extern std::vector<Quad> * icons;
-extern std::vector<Application> * applications;
-extern std::vector<Bubble> * bubbles;
+//Class includes
+#include "include/flask.h"

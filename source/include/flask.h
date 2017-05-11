@@ -1,35 +1,47 @@
 #pragma once
 
-class Flask : public Scene
+#include "starlight/Application.h"
+#include "starlight/ThemeManager.h"
+
+#include "starlight/ui/Image.h"
+#include "starlight/ui/Button.h"
+#include "starlight/ui/Form.h"
+#include "starlight/ui/Label.h"
+#include "starlight/ui/ScrollField.h"
+#include "starlight/ui/DebugConsole.h"
+
+#include "starlight/InputManager.h"
+#include "starlight/_incLib/json.hpp"
+
+#include "7z.h"
+
+using starlight::Application;
+
+using starlight::ui::Image;
+using starlight::ui::Button;
+using starlight::ui::Form;
+using starlight::ui::Label;
+using starlight::ui::DebugConsole;
+using starlight::ui::ScrollField;
+
+using starlight::InputManager;
+using starlight::ThemeManager;
+using nlohmann::json;
+
+class Flask : public Application
 {
 	public:
-		void update(float dt) override;
-		void render() override;
-		void keyPressed(u32 key) override;
-		void touchPressed(int x, int y) override;
-		Flask();
+		Flask() : Application("Flask") {}
+		~Flask() override = default;
+
+		void Init() override;
+		void Update() override;
+		
+		void CheckForUpdates();
+		char * GetLumaVersion();
 
 	private:
-		std::vector<Bubble> * bubbles;
-
-		sf2d_texture * bubbleTexture;
-		
-		Image * wifiSignal;
-		Image * batteryDisplay;
-		Image * listDisplay;
-		Image * updateDisplay;
-		Image * searchDisplay;
-		
-		OggVorbis * cursorSound;
-		
-		float bubbleTimer;
-		std::vector<Quad> * batteryQuads;
-
-		char * state;
-
-		Cursor * cursor;
-
-		int currentHomebrew;
-
-		float smoothScroll;
+		const char * version = "0.1";
+		char * lumaVersion;
+		bool lumaUpdate = false;
 };
