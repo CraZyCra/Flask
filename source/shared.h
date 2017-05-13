@@ -31,9 +31,11 @@ extern void displayError(const char * error);
 extern bool romfsEnabled;
 extern float delta;
 extern char * flaskVersion;
+//bool channelList[24];
 
 //Util
 #include "include/util.h"
+//#include "include/oggvorbis.h"
 
 //Class includes
 #include "include/flask.h"

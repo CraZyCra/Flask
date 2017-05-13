@@ -13,8 +13,6 @@
 #include "starlight/InputManager.h"
 #include "starlight/_incLib/json.hpp"
 
-#include "7z.h"
-
 using starlight::Application;
 
 using starlight::ui::Image;
@@ -42,6 +40,5 @@ class Flask : public Application
 
 	private:
 		const char * version = "0.1";
-		char * lumaVersion;
-		bool lumaUpdate = false;
+		bool updateAvailable = false;
 };

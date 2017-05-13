@@ -105,58 +105,27 @@ void Flask::Init()
 	form->Open();
 
 	this->CheckForUpdates();
-
-	CFileSeqInStream inStream;
-	CFileOutStream outStream;
-
-	FileSeqInStream_CreateVTable(&inStream);
-	File_Construct(&inStream.file);
-
-	FileOutStream_CreateVTable(&outStream);
-	File_Construct(&outStream.file);
-
-	SRes SResult;
-	printf("Opening file.\n");
-	if (InFile_Open(&inStream.file, "sdmc:/flask/Luma3DS.7z") != 0)
-		displayError("Can not open Luma3DS.7z!");
-	else
-		printf("Decoding file.\n");
-		SResult = Decode(&outStream.s, &inStream.s);
-
-	printf("Done.\n");
-	File_Close(&inStream.file);
-
-	printf("Result: %d\n", SResult);
 }
 
 void Flask::CheckForUpdates()
 {
-	//downloadFile("https://api.github.com/repos/AuroraWright/Luma3DS/releases", "Luma.json");
+	//downloadFile("https://api.github.com/repos/TurtleP/Flask/releases", "Flask.json");
 
-	FILE * luma = fopen("sdmc:/flask/Luma.json", "rb");
+	FILE * flaskJSON = fopen("sdmc:/flask/Flask.json", "rb");
 	
-	int lumaSize = fsize(luma);
-	char * lumaBuffer = (char *)malloc(lumaSize + 1);
-	fread(lumaBuffer, 1, lumaSize, luma);
-	lumaBuffer[lumaSize] = '\0';
+	int flaskSize = fsize(flaskSize);
+	char * flaskBuffer = (char *)malloc(flaskSize + 1);
+	fread(flaskBuffer, 1, flaskSize, flaskJSON);
+	flaskBuffer[flaskSize] = '\0';
 
-	json j = json::parse(lumaBuffer);
+	json j = json::parse(flaskBuffer);
 
-	std::string remoteVersion = "Luma3DS " + j[0]["tag_name"].get<std::string>();
-	//std::string remoteURL = j[0]["zipball_url"];
+	std::string remoteVersion = j[0]["tag_name"].get<std::string>();
 
-	if (strstr(this->lumaVersion, remoteVersion.c_str()) == nullptr)
-	{
-		this->lumaUpdate = true;
-		//downloadFile(remoteURL.c_str(), (remoteVersion + ".7z").c_str());
-	}
-
-	//printf("Remote: %s\n", remoteVersion.c_str());
-
-	//unzOpen("sdmc:/flask/" + remoteVersion + ".zip");
-	//unzFile lumaPayloadZip = unzOpen("sdmc:/flask/Luma3DS.7z");
-	//if (lumaPayloadZip)
-	//	printf("!");
+	if (strstr(this->version, remoteVersion.c_str()) == nullptr)
+		this->updateAvailable = true;
+	
+	//downloadFile(remoteURL.c_str(), (remoteVersion + ".7z").c_str());
 }
 
 char * Flask::GetLumaVersion()

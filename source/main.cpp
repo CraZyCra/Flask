@@ -35,8 +35,6 @@ int prevTime = 0;
 int currTime = 0;
 float dt;
 
-char * flaskVersion = "v0.1";
-
 float deltaStep()
 {
 	prevTime = currTime;
@@ -94,6 +92,16 @@ int main()
 
 	Flask().Run();
 
+	while (hasError)
+	{
+		hidScanInput();
+
+		u32 kTempDown = hidKeysDown();
+
+		if (kTempDown & KEY_START) 
+			break;
+	}
+	
 	cfguExit();
 
 	ptmuExit();
