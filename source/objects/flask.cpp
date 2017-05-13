@@ -113,7 +113,7 @@ void Flask::CheckForUpdates()
 
 	FILE * flaskJSON = fopen("sdmc:/flask/Flask.json", "rb");
 	
-	int flaskSize = fsize(flaskSize);
+	int flaskSize = fsize(flaskJSON);
 	char * flaskBuffer = (char *)malloc(flaskSize + 1);
 	fread(flaskBuffer, 1, flaskSize, flaskJSON);
 	flaskBuffer[flaskSize] = '\0';

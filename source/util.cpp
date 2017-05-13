@@ -79,8 +79,7 @@ void downloadFile(char * url, char * filename)
 
 	char httpHeaderField[20];
 
-	strcpy(httpHeaderField, "Flask/");
-	strcat(httpHeaderField, flaskVersion);
+	strcpy(httpHeaderField, "3DSFlask");
 
 	httpcAddRequestHeaderField(&httpContext, (char *)"User-Agent", httpHeaderField); 
 

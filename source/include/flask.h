@@ -40,5 +40,6 @@ class Flask : public Application
 
 	private:
 		const char * version = "0.1";
+		char * lumaVersion;
 		bool updateAvailable = false;
 };
