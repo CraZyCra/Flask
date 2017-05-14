@@ -36,10 +36,8 @@ class Flask : public Application
 		void Update() override;
 		
 		void CheckForUpdates();
-		char * GetLumaVersion();
 
 	private:
 		const char * version = "0.1";
-		char * lumaVersion;
 		bool updateAvailable = false;
 };
