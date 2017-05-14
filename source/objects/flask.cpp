@@ -31,7 +31,6 @@ void Flask::Init()
 	homeForm->touchScreen->Add(createdLabel);
 
 	homeForm->Open();
-	//homeForm->Hide();
 
 	auto container = std::make_shared<ScrollField>(starlight::VRect(0, 0, 320, 240));
 	packagesForm->touchScreen->Add(container);
@@ -105,7 +104,7 @@ void Flask::Init()
 
 void Flask::CheckForUpdates()
 {
-	//downloadFile("https://api.github.com/repos/TurtleP/Flask/releases", "Flask.json");
+	HTTP * test = new HTTP("https://api.github.com/repos/TurtleP/Flask/releases", "sdmc:/flask", "Flask.json");
 
 	FILE * flaskJSON = fopen("sdmc:/flask/Flask.json", "rb");
 	

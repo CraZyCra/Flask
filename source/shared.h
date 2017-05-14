@@ -35,7 +35,7 @@ extern char * flaskVersion;
 
 //Util
 #include "include/util.h"
-//#include "include/oggvorbis.h"
+#include "include/http.h"
 
 //Class includes
 #include "include/flask.h"
