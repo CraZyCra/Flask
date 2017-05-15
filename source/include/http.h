@@ -3,7 +3,7 @@
 class HTTP
 {
 	public:
-		HTTP(char * url, char * destination, char * filename);
+		HTTP(string url, string destination, string filename);
 		void Download();
 		void DisableVerify();
 		FILE * GetFile();
@@ -16,8 +16,9 @@ class HTTP
 		u32 size;
 		u32 bufferSize = 1024;
 		
-		char * url;
-		char * destination;
-		char * filename;
+		string url;
+		string destination;
+		string filename;
+
 		FILE * file;
 };

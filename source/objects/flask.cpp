@@ -19,11 +19,11 @@ void Flask::Init()
 	//make stuff
 	auto banner = std::make_shared<Image>(starlight::Vector2(16, 32), "romfs:/graphics/banner.png");
 	auto welcome = std::make_shared<Label>(starlight::VRect(115, 50, 200, 24));
-	welcome->SetFont("romfs:/fonts/roboto24");
+	welcome->SetFont("romfs:/fonts/roboto.24");
 	welcome->SetText("Welcome to Flask!");
 
 	auto createdLabel = std::make_shared<Label>(starlight::VRect(148, 80, 164, 16));
-	createdLabel->SetFont("romfs:/fonts/roboto16");
+	createdLabel->SetFont("romfs:/fonts/roboto.16");
 	createdLabel->SetText("Created by TurtleP");
 
 	homeForm->touchScreen->Add(banner);
@@ -97,31 +97,59 @@ void Flask::Init()
 	form->Open();
 
 	this->CheckForUpdates();
+	this->LoadHomebrew(packagesForm);
 
-	printf("Flask Version: %s\n", this->version);
-	printf("Update Available: %d\n", this->updateAvailable);
+	//printf("Flask Version: %s\n", this->version);
+	//printf("Update Available: %d\n", this->updateAvailable);
+}
+
+void Flask::LoadHomebrew(std::shared_ptr<starlight::ui::Form> form)
+{
+	//TODO: Change URL when needed!
+	//HTTP * appHTTP = new HTTP("https://api.github.com/repos/TurtleP/Flask/releases", "sdmc:/flask/", "app.json");
+	
+	/*
+	appHTTP->DisableVerify();
+	appHTTP->Download();
+	*/
+	
+	ifstream appFile("sdmc:/flask/app.json");
+	
+	json appJSON;
+	appJSON << appFile;
+
+	//delete appHTTP;
+	int i = 0;
+	for (auto it = appJSON.begin(); it != appJSON.end(); it++)
+	{
+		if (it.value().is_object())
+			Homebrew(form, i, it.key(), it.value());
+		i++;
+	}
 }
 
 void Flask::CheckForUpdates()
 {
-	HTTP * test = new HTTP("https://api.github.com/repos/TurtleP/Flask/releases", "sdmc:/flask", "Flask.json");
-
-	FILE * flaskJSON = fopen("sdmc:/flask/Flask.json", "rb");
+	HTTP * test = new HTTP("https://api.github.com/repos/TurtleP/Flask/releases", "sdmc:/flask/", "flask.json");
 	
-	if (flaskJSON == nullptr)
-		return;
+	/*
+	test->DisableVerify();
+	test->Download();
+	*/
+	
+	ifstream flaskFile("sdmc:/flask/flask.json");
 
-	int flaskSize = fsize(flaskJSON);
-	char * flaskBuffer = (char *)malloc(flaskSize + 1);
-	fread(flaskBuffer, 1, flaskSize, flaskJSON);
-	flaskBuffer[flaskSize] = '\0';
+	json flaskJSON;
+	flaskJSON << flaskFile;
 
-	json j = json::parse(flaskBuffer);
-
-	std::string remoteVersion = j[0]["tag_name"].get<std::string>();
+	string remoteVersion = flaskJSON[0]["tag_name"];
 
 	if (strstr(this->version, remoteVersion.c_str()) == nullptr)
 		this->updateAvailable = true;
+	
+	//delete test;
+
+	//printf("Remote: %s\n", remoteVersion.c_str());
 }
 
 void Flask::Update()

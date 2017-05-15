@@ -12,8 +12,27 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <vector>
-#include <ctime>
 #include <sstream>
+#include <fstream>
+#include <iostream>
+
+//Other libs
+#include "starlight/_incLib/json.hpp"
+#include "starlight/ui/Image.h"
+#include "starlight/ui/Button.h"
+#include "starlight/ui/Form.h"
+#include "starlight/ui/Label.h"
+
+using std::string;
+using std::ifstream;
+using std::iostream;
+
+using starlight::ui::Image;
+using starlight::ui::Button;
+using starlight::ui::Form;
+using starlight::ui::Label;
+
+using nlohmann::json;
 
 //Net stuff
 #include <sys/socket.h>
@@ -30,12 +49,13 @@
 extern void displayError(const char * error);
 extern bool romfsEnabled;
 extern float delta;
-extern char * flaskVersion;
-//bool channelList[24];
+extern bool channelList[24];
 
 //Util
 #include "include/util.h"
 #include "include/http.h"
 
 //Class includes
+#include "include/oggvorbis.h"
+#include "include/homebrew.h"
 #include "include/flask.h"

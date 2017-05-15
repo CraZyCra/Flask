@@ -1,35 +1,15 @@
 #include "shared.h"
 
-HTTP::HTTP(char * url, char * destination, char * filename)
+HTTP::HTTP(string url, string destination, string filename)
 {
 	this->url = url;
 	this->destination = destination;
 	this->filename = filename;
-
-	std::vector<char *> dirPath = split(this->destination, "/");
-
-	std::string path = std::string(dirPath[0]) + std::string("/");
-
-	for (int i = 1; i < dirPath.size(); i++)
-	{
-		path += dirPath[i] + std::string("/");
-		printf("Path: %s\n Folder: %s\n", path.c_str(), dirPath[i]);
-	}
-
-	this->DisableVerify();
-}
-
-HTTP::~HTTP()
-{
-	free(this->url);
-	free(this->destination);
-	free(this->filename);
-	delete this->file;
 }
 
 void HTTP::Download()
 {
-	this->returnResult = httpcOpenContext(&this->httpContext, HTTPC_METHOD_GET, this->url, 1);
+	this->returnResult = httpcOpenContext(&this->httpContext, HTTPC_METHOD_GET, this->url.c_str(), 1);
 	
 	if (this->returnResult != 0) 
 		displayError("Failed to request url.");
@@ -51,11 +31,7 @@ void HTTP::Download()
 	if (buffer == NULL) 
 		displayError("Could not create download buffer.");
 
-	char * fullpath = (char *)mallc(strlen(this->destination) + strlen(this->filename) + 1);
-	strcpy(fullpath, this->destination);
-	strcat(fullpath, this->filename);
-
-	this->file = fopen(fullpath, "wb");
+	this->file = fopen((this->destination + this->filename).c_str(), "wb");
 
 	do {
 
@@ -67,8 +43,6 @@ void HTTP::Download()
 
 	if (this->returnResult != 0) 
 		displayError("File failed to download.");
-
-	free(fullpath);
 
 	fflush(this->file);
 

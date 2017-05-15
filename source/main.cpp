@@ -28,6 +28,7 @@ bool romfsEnabled = false;
 bool hasError = false;
 bool forceQuit = false;
 bool audioEnabled = false;
+bool channelList[24];
 
 bool consoleEnabled = false;
 
@@ -82,13 +83,14 @@ int main()
 	//if (!audioEnabled) 
 	//	displayError("DSP Failed to initialize. Please dump your DSP Firm!");
 
+	for (int i = 0; i <= 23; i++) 
+		channelList[i] = false;
+
 	httpcInit(0);
 
 	mkdir("sdmc:/flask", 0777);
 
 	deltaStep();
-
-	//consoleInit(GFX_BOTTOM, NULL);
 
 	Flask().Run();
 
