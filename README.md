@@ -1,14 +1,8 @@
-# Flask
-3DS CIA Homebrew App Browser
-This is purely for Homebrew applications, nothing more.
-Users will be able to navigate through a nice interface to select downloadable apps.
-They will also have the ability to donate in various ways to the authors as an option.
-
-
-<p align="center">
-    <img src="http://i.imgur.com/X5jHlez.png"></img>
-</p>
+# Flask: 3DS CIA Homebrew App Browser
+- Clean, minimal interface
+- Download applications, games, and themes.
+- Optionally donate to authors
 
 # Building 
-Please get the 3DS portlib files from [here](https://github.com/Cruel/3ds_portlibs?files=1)
-Required are: zlib, freetype, jpegturbo, ogg, and png.
+[3DS portlibs](https://github.com/devkitPro/3ds_portlibs/)
+[libstarlight](https://github.com/zetaPrime/libstarlight)
