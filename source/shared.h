@@ -1,40 +1,22 @@
-//3DS and lib includes
+#pragma once
+
 #include <3ds.h>
+#include <citro3d.h>
 
-//Standard libs
-#include <malloc.h>
-#include <stdio.h>
-#include <string.h>
+#include <lodepng.h>
+
+#include <ivorbiscodec.h>
+#include <ivorbisfile.h>
+
+#include <json.hpp>
+
 #include <stdlib.h>
-#include <time.h>
-#include <math.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <vector>
+#include <string>
 #include <sstream>
-#include <fstream>
-#include <iostream>
+#include <vector>
+#include <malloc.h>
+#include <errno.h>
 
-//Other libs
-#include "starlight/_incLib/json.hpp"
-#include "starlight/ui/Image.h"
-#include "starlight/ui/Button.h"
-#include "starlight/ui/Form.h"
-#include "starlight/ui/Label.h"
-
-using std::string;
-using std::ifstream;
-using std::iostream;
-
-using starlight::ui::Image;
-using starlight::ui::Button;
-using starlight::ui::Form;
-using starlight::ui::Label;
-
-using nlohmann::json;
-
-//Net stuff
 #include <sys/socket.h>
 #include <sys/ioctl.h>
 #include <netinet/in.h>
@@ -42,20 +24,30 @@ using nlohmann::json;
 #include <netdb.h>
 #include <fcntl.h>
 
-//Ogg format things
-#include <ivorbiscodec.h>
-#include <ivorbisfile.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <dirent.h>
+#include <stdio.h>
 
-extern void displayError(const char * error);
-extern bool romfsEnabled;
-extern float delta;
+#include "objects/console.h"
+#include "types.h"
+
+#define CONFIG_3D_SLIDERSTATE (*(volatile float *)0x1FF81080)
+
+extern love::Console * console;
+extern bool QUIT_APP;
+
+extern bool screenEnable[1];
+extern volatile bool updateAudioThread;
+
+extern gfxScreen_t currentScreen;
+extern gfxScreen_t renderScreen;
+extern gfx3dSide_t currentSide;
+extern GPU_TEXTURE_FILTER_PARAM minFilter;
+extern GPU_TEXTURE_FILTER_PARAM magFilter;
+
+extern touchPosition touch;
+extern bool touchDown;
+extern int lastTouch[2];
 extern bool channelList[24];
-
-//Util
-#include "include/util.h"
-#include "include/http.h"
-
-//Class includes
-#include "include/oggvorbis.h"
-#include "include/homebrew.h"
-#include "include/flask.h"

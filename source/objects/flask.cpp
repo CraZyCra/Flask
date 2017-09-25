@@ -1,158 +1,150 @@
-#include "shared.h"
+#include "include/flask.h"
 
-void Flask::Init()
+Flask::Flask()
 {
-	this->clearColor = starlight::Color(0.26f, 0.26f, 0.26f);
+	graphicsSetBackgroundColor(66, 165, 245);
 
-	auto form = std::make_shared<Form>(true);
-	form->priority = 1;
+	for (int i = 0; i < 4; i++)
+		this->gui.push_back(new Button((i * 80), 208, i));
 
-	auto homeButton = std::make_shared<Button>(starlight::VRect(0, 208, 80, 32));
-	homeButton->style.glyph = ThemeManager::GetAsset("romfs:/graphics/home.png");
-	form->touchScreen->Add(homeButton);
+	this->gui[0]->Select(true);
+	this->state = 0;
 
-	auto homeForm = std::make_shared<Form>(true);
-	auto packagesForm = std::make_shared<Form>(true);
-	auto updatesForm = std::make_shared<Form>(true);
-	auto settingsForm = std::make_shared<Form>(true);
+	this->wifiModule = new WiFi(2, 2);
+	this->batteryModule = new Battery(374, 4);
 
-	//make stuff
-	auto banner = std::make_shared<Image>(starlight::Vector2(16, 32), "romfs:/graphics/banner.png");
-	auto welcome = std::make_shared<Label>(starlight::VRect(115, 50, 200, 24));
-	welcome->SetFont("romfs:/fonts/roboto.24");
-	welcome->SetText("Welcome to Flask!");
+	this->mainFont = new Font("fonts/Roboto.12");
+	graphicsSetFont(this->mainFont);
 
-	auto createdLabel = std::make_shared<Label>(starlight::VRect(148, 80, 164, 16));
-	createdLabel->SetFont("romfs:/fonts/roboto.16");
-	createdLabel->SetText("Created by TurtleP");
+	this->logo = new Texture("graphics/banner.png");
 
-	homeForm->touchScreen->Add(banner);
-	homeForm->touchScreen->Add(welcome);
-	homeForm->touchScreen->Add(createdLabel);
-
-	homeForm->Open();
-
-	auto container = std::make_shared<ScrollField>(starlight::VRect(0, 0, 320, 240));
-	packagesForm->touchScreen->Add(container);
-
-	packagesForm->Open();
-	packagesForm->Hide();
-
-	updatesForm->Open();
-	updatesForm->Hide();
-
-	settingsForm->Open();
-	settingsForm->Hide();
-
-
-	homeButton->eOnTap = [homeForm, packagesForm, updatesForm, settingsForm](auto& btn)
-	{
-		packagesForm->Hide();
-		updatesForm->Hide();
-		settingsForm->Hide();
-		if (!homeForm->IsVisible())
-			homeForm->Show();
-	};
-
-	auto packagesButton = std::make_shared<Button>(starlight::VRect(80, 208, 80, 32));
-	packagesButton->style.glyph = ThemeManager::GetAsset("romfs:/graphics/packages.png");
-	packagesButton->eOnTap = [homeForm, packagesForm, updatesForm, settingsForm](auto& btn) 
-	{
-		homeForm->Hide();
-		updatesForm->Hide();
-		settingsForm->Hide();
-		if (!packagesForm->IsVisible())
-			packagesForm->Show();
-	};
-	form->touchScreen->Add(packagesButton);
-
-	auto updatesButton = std::make_shared<Button>(starlight::VRect(160, 208, 80, 32));
-	updatesButton->style.glyph = ThemeManager::GetAsset("romfs:/graphics/updates.png");
-	updatesButton->eOnTap = [homeForm, packagesForm, updatesForm, settingsForm](auto& btn)
-	{
-		homeForm->Hide();
-		packagesForm->Hide();
-		settingsForm->Hide();
-		if (!updatesForm->IsVisible())
-			updatesForm->Show();
-	};
-	form->touchScreen->Add(updatesButton);
-
-	auto settingsButton = std::make_shared<Button>(starlight::VRect(240, 208, 80, 32));
-	settingsButton->style.glyph = ThemeManager::GetAsset("romfs:/graphics/settings.png");
-	settingsButton->eOnTap = [homeForm, packagesForm, updatesForm, settingsForm](auto& btn)
-	{
-		homeForm->Hide();
-		packagesForm->Hide();
-		updatesForm->Hide();
-		if (!settingsForm->IsVisible())
-			settingsForm->Show();
-	};
-	form->touchScreen->Add(settingsButton);
-
-	auto debug = std::make_shared<DebugConsole>(starlight::VRect(0, 0, 400, 240));
-	form->topScreen->Add(debug);
-	debug->Start();
-
-	form->Open();
+	this->clickSound = new Source("audio/cursor.ogg", "static");
 
 	this->CheckForUpdates();
-	this->LoadHomebrew(packagesForm);
-
-	//printf("Flask Version: %s\n", this->version);
-	//printf("Update Available: %d\n", this->updateAvailable);
 }
 
-void Flask::LoadHomebrew(std::shared_ptr<starlight::ui::Form> form)
+void Flask::Update(float dt)
 {
-	//TODO: Change URL when needed!
-	//HTTP * appHTTP = new HTTP("https://api.github.com/repos/TurtleP/Flask/releases", "sdmc:/flask/", "app.json");
-	
-	/*
-	appHTTP->DisableVerify();
-	appHTTP->Download();
-	*/
-	
-	ifstream appFile("sdmc:/flask/app.json");
-	
-	json appJSON;
-	appJSON << appFile;
+	this->wifiModule->Update(dt);
+	this->batteryModule->Update(dt);
 
-	//delete appHTTP;
-	int i = 0;
-	for (auto it = appJSON.begin(); it != appJSON.end(); it++)
+	for (auto &bubble : this->bubbles)
 	{
-		if (it.value().is_object())
-			Homebrew(form, i, it.key(), it.value());
-		i++;
+		bubble->Update(dt);
+		if (bubble->ShouldRemove())
+			this->bubbles.erase(std::remove(this->bubbles.begin(), this->bubbles.end(), bubble), this->bubbles.end());
 	}
+
+	this->bubbleTimer -= dt;
+	if (this->bubbleTimer < 0)
+	{
+		this->bubbles.push_back(new Bubble(rand() % 320, 240));
+		this->bubbleTimer = 0.15;
+	}
+}
+
+void Flask::Render()
+{
+	graphicsSetScreen(GFX_TOP);
+	this->wifiModule->Render();
+	this->batteryModule->Render();
+
+	time_t now = time(0);
+	tm *ltm = localtime(&now);
+
+	int hour = 1 + ltm->tm_hour;
+	int mins = 1 + ltm->tm_min;
+
+	std::string time = std::to_string(hour) + ":" + std::to_string(mins);
+
+	graphicsPrint(time.c_str(), 200 - this->mainFont->GetWidth(time.c_str()) / 2, 3 + (8 - this->mainFont->GetHeight() / 2));
+
+	graphicsSetScreen(GFX_BOTTOM);
+
+	graphicsSetColor(255, 255, 255);
+
+	for (auto &bubble : this->bubbles)
+		bubble->Render();
+
+	graphicsSetColor(255, 255, 255);
+
+	if (this->state == 0)
+	{
+		this->logo->Render(160 - this->logo->GetWidth() / 2, 20);
+		graphicsPrint("By TurtleP", 180, 84);
+	}
+
+	graphicsSetColor(33, 150, 243);
+	graphicsRectangle(0, 208, 320, 32);
+
+	for (auto &item : this->gui)
+		item->Render();
+}
+
+void Flask::Touch(float x, float y)
+{
+	for (auto &item : this->gui)
+	{
+		if (item->Touch(x, y))
+		{
+			this->state = item->GetID();
+			this->clickSound->Play();
+		}
+	}
+}
+
+void Flask::KeyPressed(std::string key)
+{
+	if (key.find("button") != std::string::npos)
+	{
+		if (key == "rbutton")
+		{
+			if (this->state + 1 < this->gui.size())
+				this->clickSound->Play();
+
+			this->state = std::min(this->state + 1, (int)this->gui.size() - 1);
+		}
+		else if (key == "lbutton")
+		{
+			if (this->state - 1 > -1) 
+				this->clickSound->Play();
+
+			this->state = std::max(this->state - 1, 0);
+		}
+
+		for (auto &item : this->gui)
+		{
+			if (item->GetID() != this->state)
+				item->Select(false);
+		}
+
+		this->gui[this->state]->Select(true);
+	}
+
+	if (key == "start")
+		QUIT_APP = true;
+}
+
+void Flask::KeyReleased(std::string key)
+{
+
+}
+
+void Flask::LoadHomebrew()
+{
+
 }
 
 void Flask::CheckForUpdates()
 {
-	HTTP * test = new HTTP("https://api.github.com/repos/TurtleP/Flask/releases", "sdmc:/flask/", "flask.json");
-	
-	/*
-	test->DisableVerify();
-	test->Download();
-	*/
-	
-	ifstream flaskFile("sdmc:/flask/flask.json");
+	HTTP * updateRequest = new HTTP("https://api.github.com/repos/TurtleP/Flask/releases");
+	updateRequest->OpenContext(HTTPC_METHOD_GET, true);
+	updateRequest->AddRequestHeaderField(std::string("User-Agent:"), std::string("Flask/") + this->version);
+	updateRequest->BeginRequest();
+	updateRequest->Download();
+	updateRequest->Close();
 
-	json flaskJSON;
-	flaskJSON << flaskFile;
+	std::string jsonBuffer = updateRequest->GetBuffer();
 
-	string remoteVersion = flaskJSON[0]["tag_name"];
-
-	if (strstr(this->version, remoteVersion.c_str()) == nullptr)
-		this->updateAvailable = true;
-	
-	//delete test;
-
-	//printf("Remote: %s\n", remoteVersion.c_str());
-}
-
-void Flask::Update()
-{
-
+	printf("%s\n", jsonBuffer.c_str());
 }

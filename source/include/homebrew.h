@@ -1,15 +1,25 @@
 #pragma once
 
+enum HOMEBREW_CATERGORY {
+	UTILITY = 0,
+	THEME = 1,
+	GAME = 2
+};
+
 class Homebrew
 {
 	public:
-		Homebrew(std::shared_ptr<starlight::ui::Form>, int i, string name, json properties);
-		
-	private:
-		string name;
-		string category;
-		string url;
+		Homebrew();
+		int GetID();
+		void SetHighlight();
 
-		string author;
-		string version;
+	private:
+		std::string name;
+		HOMEBREW_CATERGORY category;
+		std::string url;
+
+		std::string author;
+		std::string version;
+
+		int id;
 };

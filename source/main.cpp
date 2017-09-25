@@ -23,14 +23,30 @@
 */
 
 #include "shared.h"
+#include "include/flask.h"
+#include "wrap_graphics.h"
+#include "include/source.h"
 
 bool romfsEnabled = false;
 bool hasError = false;
 bool forceQuit = false;
 bool audioEnabled = false;
-bool channelList[24];
+std::vector<Source *> streams;
+love::Console * console;
+bool QUIT_APP = false;
 
 bool consoleEnabled = false;
+
+char BUTTONS[32][32] = {
+	"a", "b", "select", "start",
+	"right", "left", "up", "down",
+	"rbutton", "lbutton", "x", "y",
+	"", "", "lzbutton", "rzbutton",
+	"", "", "", "",
+	"touch", "", "", "",
+	"cstickright", "cstickleft", "cstickup", "cstickdown",
+	"cpadright", "cpadleft", "cpadup", "cpaddown"
+};
 
 int prevTime = 0;
 int currTime = 0;
@@ -51,64 +67,92 @@ float deltaStep()
 	return dt;
 }
 
-void displayError(const char * error)
-{	
-	hasError = true;
-
-	consoleInit(GFX_BOTTOM, NULL);
-
-	printf("\n\x1b[31mError: %s\x1b[0m\nPress 'Start' to quit.\n", error);
-}
-
 int main()
 {
 	srand(osGetTime());
-
-	cfguInit();
-
-	ptmuInit();
-
-	if (consoleEnabled) 
-		consoleInit(GFX_BOTTOM, NULL);
-
-	Result enableROMFS = romfsInit();
-
-	romfsEnabled = (enableROMFS) ? false : true;
+	
+	romfsEnabled = (romfsInit()) ? false : true;
 
 	audioEnabled = !ndspInit();
 
+	ptmuInit();
+
 	if (romfsEnabled) 
 		chdir("romfs:/");
+	else
+	{
+		char cwd[256];
+		getcwd(cwd, 256);
 
-	//if (!audioEnabled) 
-	//	displayError("DSP Failed to initialize. Please dump your DSP Firm!");
+		strcat(cwd, "assets/");
+
+		chdir(cwd);
+	}
 
 	for (int i = 0; i <= 23; i++) 
 		channelList[i] = false;
 
 	httpcInit(0);
 
-	mkdir("sdmc:/flask", 0777);
-
 	deltaStep();
 
-	Flask().Run();
+	graphicsInit();
 
-	while (hasError)
+	console = new love::Console();
+	console->Enable(GFX_BOTTOM);
+
+	Flask * mainApp = new Flask();
+
+	touchPosition touch;
+
+	Source * intro = new Source("audio/loop.ogg", "static");
+	intro->SetLooping(true);
+	intro->Play();
+
+	while (aptMainLoop())
 	{
+		if (QUIT_APP)
+			break;
+
 		hidScanInput();
 
-		u32 kTempDown = hidKeysDown();
+		u32 keyDown = hidKeysDown();
 
-		if (kTempDown & KEY_START) 
-			break;
-	}
+		for (int i = 0; i < 32; i++)
+		{
+			if (keyDown & BIT(i))
+			{	
+				if (strcmp(BUTTONS[i], "touch") != 0)
+					mainApp->KeyPressed(std::string(BUTTONS[i]));
+			}
+		}
+
+		if (keyDown & BIT(20))
+		{
+			hidTouchRead(&touch);
+		
+			mainApp->Touch(touch.px, touch.py);
+		}
 	
-	cfguExit();
+		mainApp->Update(deltaStep());
+		
+		graphicsRender(GFX_TOP);
 
-	ptmuExit();
+		mainApp->Render();
+		
+		if (!console->IsEnabled())
+		{
+			graphicsRender(GFX_BOTTOM);
+
+			mainApp->Render();
+		}
+
+		graphicsSwapBuffers();
+	}
 
 	httpcExit();
+
+	ptmuExit();
 
 	if (romfsEnabled) romfsExit();
 

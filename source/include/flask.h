@@ -1,34 +1,50 @@
 #pragma once
 
-#include "starlight/Application.h"
-#include "starlight/ThemeManager.h"
+#include "wrap_graphics.h"
+#include "crendertarget.h"
+#include "button.h"
+#include "wifi.h"
+#include "battery.h"
+#include "bubble.h"
 
-#include "starlight/ui/ScrollField.h"
-#include "starlight/ui/DebugConsole.h"
+#include "texture.h"
+#include "font.h"
 
-#include "starlight/InputManager.h"
+#include "shared.h"
+#include "include/http.h"
 
-using starlight::Application;
 
-
-using starlight::ui::DebugConsole;
-using starlight::ui::ScrollField;
-
-using starlight::InputManager;
-using starlight::ThemeManager;
-
-class Flask : public Application
+class Flask
 {
 	public:
-		Flask() : Application("Flask") {}
-		~Flask() override = default;
+		Flask();
+		~Flask();
 
-		void Init() override;
-		void Update() override;
+		void Update(float dt);
 		void CheckForUpdates();
-		void LoadHomebrew(std::shared_ptr<starlight::ui::Form>);
+		void LoadHomebrew();
+		void Render();
+		void Touch(float x, float y);
+		void KeyPressed(std::string key);
+		void KeyReleased(std::string key);
 
 	private:
 		const char * version = "0.1";
 		bool updateAvailable = false;
+		//std::vector<Homebrew> homebrew;
+		int selection = 0;
+
+		std::vector<Button *> gui;
+		std::vector<Bubble *> bubbles;
+
+		WiFi * wifiModule;
+		Battery * batteryModule;
+
+		float bubbleTimer = 0.15;
+		int state;
+
+		Texture * logo;
+		Source * clickSound;
+
+		Font * mainFont;
 };
