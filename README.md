@@ -5,4 +5,4 @@
 
 # Building 
 [3DS portlibs](https://github.com/devkitPro/3ds_portlibs/)
-[libstarlight](https://github.com/zetaPrime/libstarlight)
+[Citro3D](https://github.com/fincs/citro3d)
