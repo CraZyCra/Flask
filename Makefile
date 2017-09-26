@@ -27,18 +27,11 @@ include $(DEVKITARM)/3ds_rules
 #     - <libctru folder>/default_icon.png
 #---------------------------------------------------------------------------------
 
-VERSION		:= 1.0
+VERSION		:=	0.1
 
 TARGET		:=	$(notdir $(CURDIR))
 BUILD		:=	build
-SOURCES		:=	\
-				source \
-				source/common \
-				source/modules \
-				source/objects \
-				source/libs/tremor \
-				source/libs/lodepng \
-				source/libs/json
+SOURCES		:=	$(sort $(dir $(wildcard source/*/ source/*/*/)))
 DATA 		:=	data
 INCLUDES	:=	$(SOURCES)
 

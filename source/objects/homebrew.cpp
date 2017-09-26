@@ -1,5 +1,4 @@
-#include "shared.h"
-#include "include/homebrew.h"
+#include "homebrew.h"
 
 Homebrew::Homebrew()
 {

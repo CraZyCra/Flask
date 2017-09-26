@@ -1,4 +1,4 @@
-#include "include/bubble.h"
+#include "bubble.h"
 
 Bubble::Bubble(float x, float y)
 {
@@ -32,7 +32,7 @@ void Bubble::Render()
 {
 	graphicsSetScreen(this->screen);
 
-	graphicsSetColor(100, 181, 246);
+	graphicsSetColor(34, 134, 195);
 
 	bindTexture(this->graphic->GetTexture());
 	graphicsDraw(this->graphic->GetTexture(), this->x, this->y, this->graphic->GetWidth(), this->graphic->GetHeight(), 0, 1, 1);

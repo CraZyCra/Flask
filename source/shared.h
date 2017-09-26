@@ -30,15 +30,14 @@
 #include <dirent.h>
 #include <stdio.h>
 
-#include "objects/console.h"
-#include "types.h"
+#include "common/console.h"
+#include "common/types.h"
 
 #define CONFIG_3D_SLIDERSTATE (*(volatile float *)0x1FF81080)
 
-extern love::Console * console;
+extern Console * console;
 extern bool QUIT_APP;
 
-extern bool screenEnable[1];
 extern volatile bool updateAudioThread;
 
 extern gfxScreen_t currentScreen;
@@ -46,8 +45,3 @@ extern gfxScreen_t renderScreen;
 extern gfx3dSide_t currentSide;
 extern GPU_TEXTURE_FILTER_PARAM minFilter;
 extern GPU_TEXTURE_FILTER_PARAM magFilter;
-
-extern touchPosition touch;
-extern bool touchDown;
-extern int lastTouch[2];
-extern bool channelList[24];

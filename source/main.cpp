@@ -23,49 +23,18 @@
 */
 
 #include "shared.h"
-#include "include/flask.h"
-#include "wrap_graphics.h"
-#include "include/source.h"
+
+#include "objects/flask.h"
+#include "modules/graphics/graphics.h"
+#include "modules/audio/source.h"
+#include "modules/system/core.h"
 
 bool romfsEnabled = false;
-bool hasError = false;
-bool forceQuit = false;
 bool audioEnabled = false;
-std::vector<Source *> streams;
-love::Console * console;
 bool QUIT_APP = false;
 
-bool consoleEnabled = false;
-
-char BUTTONS[32][32] = {
-	"a", "b", "select", "start",
-	"right", "left", "up", "down",
-	"rbutton", "lbutton", "x", "y",
-	"", "", "lzbutton", "rzbutton",
-	"", "", "", "",
-	"touch", "", "", "",
-	"cstickright", "cstickleft", "cstickup", "cstickdown",
-	"cpadright", "cpadleft", "cpadup", "cpaddown"
-};
-
-int prevTime = 0;
-int currTime = 0;
-float dt;
-
-float deltaStep()
-{
-	prevTime = currTime;
-
-	currTime = osGetTime();
-
-	dt = currTime - prevTime;
-
-	dt = dt * 0.001;
-
-	if (dt < 0) dt = 0; // Fix nasty timer bug
-
-	return dt;
-}
+Console * console;
+std::vector<Source *> streams;
 
 int main()
 {
@@ -98,12 +67,10 @@ int main()
 
 	graphicsInit();
 
-	console = new love::Console();
-	console->Enable(GFX_BOTTOM);
+	console = new Console();
+	//console->Enable(GFX_BOTTOM);
 
 	Flask * mainApp = new Flask();
-
-	touchPosition touch;
 
 	Source * intro = new Source("audio/loop.ogg", "static");
 	intro->SetLooping(true);
@@ -113,27 +80,9 @@ int main()
 	{
 		if (QUIT_APP)
 			break;
-
-		hidScanInput();
-
-		u32 keyDown = hidKeysDown();
-
-		for (int i = 0; i < 32; i++)
-		{
-			if (keyDown & BIT(i))
-			{	
-				if (strcmp(BUTTONS[i], "touch") != 0)
-					mainApp->KeyPressed(std::string(BUTTONS[i]));
-			}
-		}
-
-		if (keyDown & BIT(20))
-		{
-			hidTouchRead(&touch);
-		
-			mainApp->Touch(touch.px, touch.py);
-		}
 	
+		scanInput(mainApp);
+
 		mainApp->Update(deltaStep());
 		
 		graphicsRender(GFX_TOP);

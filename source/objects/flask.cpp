@@ -1,4 +1,4 @@
-#include "include/flask.h"
+#include "flask.h"
 
 Flask::Flask()
 {
@@ -7,7 +7,7 @@ Flask::Flask()
 	for (int i = 0; i < 4; i++)
 		this->gui.push_back(new Button((i * 80), 208, i));
 
-	this->gui[0]->Select(true);
+	this->gui[0]->Select();
 	this->state = 0;
 
 	this->wifiModule = new WiFi(2, 2);
@@ -20,7 +20,7 @@ Flask::Flask()
 
 	this->clickSound = new Source("audio/cursor.ogg", "static");
 
-	this->CheckForUpdates();
+	//this->CheckForUpdates();
 }
 
 void Flask::Update(float dt)
@@ -81,6 +81,33 @@ void Flask::Render()
 		item->Render();
 }
 
+void Flask::KeyPressed(std::string key)
+{
+	if (key.find("button") != std::string::npos)
+	{
+		if (key == "rbutton")
+			this->state = std::min(this->state + 1, (int)this->gui.size() - 1);
+		else if (key == "lbutton")
+			this->state = std::max(this->state - 1, 0);
+
+		for (auto &item : this->gui)
+		{
+			if (item->GetID() != this->state)
+				item->UnSelect();
+		}
+
+		this->gui[this->state]->Select();
+	}
+
+	if (key == "start")
+		QUIT_APP = true;
+}
+
+void Flask::KeyReleased(std::string key)
+{
+
+}
+
 void Flask::Touch(float x, float y)
 {
 	for (auto &item : this->gui)
@@ -93,39 +120,7 @@ void Flask::Touch(float x, float y)
 	}
 }
 
-void Flask::KeyPressed(std::string key)
-{
-	if (key.find("button") != std::string::npos)
-	{
-		if (key == "rbutton")
-		{
-			if (this->state + 1 < this->gui.size())
-				this->clickSound->Play();
-
-			this->state = std::min(this->state + 1, (int)this->gui.size() - 1);
-		}
-		else if (key == "lbutton")
-		{
-			if (this->state - 1 > -1) 
-				this->clickSound->Play();
-
-			this->state = std::max(this->state - 1, 0);
-		}
-
-		for (auto &item : this->gui)
-		{
-			if (item->GetID() != this->state)
-				item->Select(false);
-		}
-
-		this->gui[this->state]->Select(true);
-	}
-
-	if (key == "start")
-		QUIT_APP = true;
-}
-
-void Flask::KeyReleased(std::string key)
+void Flask::TouchReleased(float x, float y)
 {
 
 }
@@ -139,7 +134,7 @@ void Flask::CheckForUpdates()
 {
 	HTTP * updateRequest = new HTTP("https://api.github.com/repos/TurtleP/Flask/releases");
 	updateRequest->OpenContext(HTTPC_METHOD_GET, true);
-	updateRequest->AddRequestHeaderField(std::string("User-Agent:"), std::string("Flask/") + this->version);
+	updateRequest->AddRequestHeaderField(std::string("User-Agent"), std::string("Flask/") + this->version);
 	updateRequest->BeginRequest();
 	updateRequest->Download();
 	updateRequest->Close();
